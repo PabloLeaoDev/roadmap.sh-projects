@@ -1,4 +1,4 @@
-interface task {
+interface Task {
   id: number,
   description: string,
   status: boolean,
@@ -6,4 +6,4 @@ interface task {
   updatedAt: Date
 }
 
-export default task;
+export default Task;

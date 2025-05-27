@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import task from './interfaces/task';
-import { writeFile, readFile, mkdir } from 'fs';
+import Task from './interfaces/task';
+import { writeFile, readFile, mkdir, existsSync } from 'fs';
 import { resolve } from 'path';
 
 export default class TaskCLI {
@@ -20,12 +20,12 @@ export default class TaskCLI {
     });
   }
 
-  static createDataBase(): void {
-    writeFile(TaskCLI.dataPath, '[]', (err) => {
+  static createDataBase(fileContent = '[]'): void {
+    writeFile(TaskCLI.dataPath, fileContent, (err) => {
       if (err) {
         TaskCLI.createPath(TaskCLI.dataPath);
         TaskCLI.createDataBase();
-      } else console.log('The file has been saved!');
+      } else if (!existsSync(TaskCLI.dataPath)) console.log('The file has been saved!');
     });
   }
 
@@ -33,8 +33,19 @@ export default class TaskCLI {
 
   }
 
-  static addTask() {
+  static addTask(task?: Task) {
+    if (!existsSync(TaskCLI.dataPath)) TaskCLI.createDataBase();
 
+    readFile(TaskCLI.dataPath, 'utf-8', (err, data) => {
+      if (err) new Error(err.message);
+
+      const convertData = JSON.parse(data) || null,
+            concatData = [...convertData, task],
+            reconvertData = JSON.stringify(concatData);
+
+      if (reconvertData) TaskCLI.createDataBase(reconvertData);
+      else throw new Error('Cannot add the task!');
+    })
   }
 
   static updateTask() {
@@ -46,4 +57,10 @@ export default class TaskCLI {
   }
 }
 
-TaskCLI.createDataBase()
+TaskCLI.addTask({
+  id: 1,
+  description: 'string',
+  status: true,
+  createdAt: new Date(),
+  updatedAt: new Date()
+})
