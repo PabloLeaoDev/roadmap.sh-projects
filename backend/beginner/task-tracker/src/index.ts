@@ -39,9 +39,12 @@ export default class TaskCLI {
     readFile(TaskCLI.dataPath, 'utf-8', (err, data) => {
       if (err) new Error(err.message);
 
-      const convertData = JSON.parse(data) || null,
-            concatData = [...convertData, task],
-            reconvertData = JSON.stringify(concatData);
+      let convertData = [], concatData, reconvertData;
+
+      if (data) convertData = JSON.parse(data);
+
+      concatData = [...convertData, task];
+      reconvertData = JSON.stringify(concatData);
 
       if (reconvertData) TaskCLI.createDataBase(reconvertData);
       else throw new Error('Cannot add the task!');
