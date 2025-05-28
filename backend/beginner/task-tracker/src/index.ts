@@ -1,69 +1,108 @@
 #!/usr/bin/env node
 
 import Task from './interfaces/task';
-import { writeFile, readFile, mkdir, existsSync } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import { resolve } from 'path';
 
 export default class TaskCLI {
   public static args: Array<string> = process.argv;
   public static dataPath: string = resolve('db', 'data.json');
 
-  static createPath(path: string) {
-    const cleanPath = path.split('\\');
+  static async listTasks(): Promise<void> {
 
-    if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop();
-
-    mkdir(cleanPath.join('\\'), { recursive: true }, (err) => {
-      if (err) new Error(err.message);
-
-      console.log('The path has been created!');
-    });
   }
 
-  static createDataBase(fileContent = '[]'): void {
-    writeFile(TaskCLI.dataPath, fileContent, (err) => {
-      if (err) {
-        TaskCLI.createPath(TaskCLI.dataPath);
-        TaskCLI.createDataBase();
-      } else if (!existsSync(TaskCLI.dataPath)) console.log('The file has been saved!');
-    });
+  static async createPath(path: string): Promise<void> {
+    try {
+       const cleanPath = path.split('\\');
+
+      if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop();
+
+      await fs.mkdir(cleanPath.join('\\'), { recursive: true });
+
+      console.log('The path has been created!');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  static async createDataBase(fileContent = '[]'): Promise<void> {
+    try {
+      await fs.writeFile(TaskCLI.dataPath, fileContent);
+    } catch (err) {
+      console.log('Creating database...');
+      await TaskCLI.createPath(TaskCLI.dataPath);
+      await TaskCLI.createDataBase();
+    } finally {
+      console.log('The file has been saved!')
+    }
   }
 
   static changeTaskStatus() {
 
   }
 
-  static addTask(task?: Task) {
-    if (!existsSync(TaskCLI.dataPath)) TaskCLI.createDataBase();
+  static async addTask(task?: Task): Promise<void> {
+    if (!existsSync(TaskCLI.dataPath)) await TaskCLI.createDataBase();
 
-    readFile(TaskCLI.dataPath, 'utf-8', (err, data) => {
-      if (err) new Error(err.message);
-
-      let convertData = [], concatData, reconvertData;
-
-      if (data) convertData = JSON.parse(data);
-
-      concatData = [...convertData, task];
-      reconvertData = JSON.stringify(concatData);
+    try {
+      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+            convertData = data ? JSON.parse(data) : [], 
+            concatData = [...convertData, task], 
+            reconvertData = JSON.stringify(concatData);
 
       if (reconvertData) TaskCLI.createDataBase(reconvertData);
-      else throw new Error('Cannot add the task!');
-    })
+
+      console.log('Task added!');
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   static updateTask() {
 
   }
 
-  static deleteTask() {
+  static async deleteTask(id: number): Promise<void> {
+    if (!existsSync(TaskCLI.dataPath)) return;
 
+    try {
+      await fs.readFile(TaskCLI.dataPath, 'utf-8');
+
+      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8');
+      let convertData = data ? JSON.parse(data) : [];
+
+      if (data) convertData = JSON.parse(data);
+      else {
+        console.log('No data to be deleted!');
+        return;
+      }
+
+      const newData = (convertData as Task[]).map((task, i) => {
+        if (task.id === id) convertData.splice(i, 1);
+      });
+
+      console.log(newData);
+
+      const reconvertData = JSON.stringify(newData);
+
+      if (reconvertData) TaskCLI.createDataBase(reconvertData);
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
 
-TaskCLI.addTask({
-  id: 1,
-  description: 'string',
-  status: true,
-  createdAt: new Date(),
-  updatedAt: new Date()
-})
+(async () => {
+  for (let i = 0; i < 3; i++) {
+    await TaskCLI.addTask({
+      id: i,
+      description: 'string',
+      status: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+  }
+})();
+
+// TaskCLI.deleteTask(2);
