@@ -67,24 +67,24 @@ export default class TaskCLI {
     if (!existsSync(TaskCLI.dataPath)) return;
 
     try {
-      await fs.readFile(TaskCLI.dataPath, 'utf-8');
-
       const data = await fs.readFile(TaskCLI.dataPath, 'utf-8');
-      let convertData = data ? JSON.parse(data) : [];
+      const convertData = data ? JSON.parse(data) : null;
 
-      if (data) convertData = JSON.parse(data);
-      else {
+      if (!convertData) {
         console.log('No data to be deleted!');
         return;
       }
 
-      const newData = (convertData as Task[]).map((task, i) => {
-        if (task.id === id) convertData.splice(i, 1);
+      (convertData as Task[]).map((task, i) => {
+        if (task && task.id === id) {
+          console.log(convertData.splice(i, 1));
+          
+          return null;
+        }
+        return task;
       });
 
-      console.log(newData);
-
-      const reconvertData = JSON.stringify(newData);
+      const reconvertData = JSON.stringify([...convertData]);
 
       if (reconvertData) TaskCLI.createDataBase(reconvertData);
     } catch (err) {
@@ -93,16 +93,16 @@ export default class TaskCLI {
   }
 }
 
-(async () => {
-  for (let i = 0; i < 3; i++) {
-    await TaskCLI.addTask({
-      id: i,
-      description: 'string',
-      status: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })
-  }
-})();
+// (async () => {
+//   for (let i = 0; i < 30; i++) {
+//     await TaskCLI.addTask({
+//       id: i,
+//       description: 'string',
+//       status: true,
+//       createdAt: new Date(),
+//       updatedAt: new Date()
+//     })
+//   }
+// })();
 
-// TaskCLI.deleteTask(2);
+TaskCLI.deleteTask(6);
