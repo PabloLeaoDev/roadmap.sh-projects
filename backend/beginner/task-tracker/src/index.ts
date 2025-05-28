@@ -59,16 +59,39 @@ export default class TaskCLI {
     }
   }
 
-  static updateTask() {
+  static async updateTask(id: number, fields: Record<string, string | boolean>) {
+    if (!existsSync(TaskCLI.dataPath)) return;
 
+    try {
+      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+            convertData = data ? JSON.parse(data) : null;
+
+      if (!convertData) {
+        console.log('No data to be deleted!');
+        return;
+      }
+
+      (convertData as Task[]).map((task, i) => {
+        if (task && task.id === id) {
+          task
+          
+          return null;
+        }
+        return task;
+      });
+
+      const reconvertData = JSON.stringify([...convertData]);
+    } catch (err) {
+
+    }
   }
 
   static async deleteTask(id: number): Promise<void> {
     if (!existsSync(TaskCLI.dataPath)) return;
 
     try {
-      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8');
-      const convertData = data ? JSON.parse(data) : null;
+      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+            convertData = data ? JSON.parse(data) : null;
 
       if (!convertData) {
         console.log('No data to be deleted!');
