@@ -1,4 +1,4 @@
-interface Task {
+export interface Task {
   id: number,
   description: string,
   status: boolean,
@@ -6,4 +6,4 @@ interface Task {
   updatedAt: Date
 }
 
-export default Task;
+export type TaskFields = 'id' | 'description' | 'status' | 'createdAt' | 'updatedAt';

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import Task from './interfaces/task';
+import { Task, TaskFields} from './interfaces/task';
 import { promises as fs, existsSync } from 'fs';
 import { resolve } from 'path';
 
@@ -59,7 +59,7 @@ export default class TaskCLI {
     }
   }
 
-  static async updateTask(id: number, fields: Record<string, string | boolean>) {
+  static async updateTask(id: number, fields: Record<TaskFields, string | boolean>) {
     if (!existsSync(TaskCLI.dataPath)) return;
 
     try {
@@ -73,7 +73,9 @@ export default class TaskCLI {
 
       (convertData as Task[]).map((task, i) => {
         if (task && task.id === id) {
-          task
+          for (let field in fields) {
+            //task[field] = 
+          }
           
           return null;
         }
