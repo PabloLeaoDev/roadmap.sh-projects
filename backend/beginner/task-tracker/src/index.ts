@@ -1,15 +1,28 @@
 #!/usr/bin/env node
 
-import { Task, TaskFields} from './interfaces/task';
+import { Task, UpdatableTaskFields} from './interfaces/task';
 import { promises as fs, existsSync } from 'fs';
 import { resolve } from 'path';
 
 export default class TaskCLI {
   public static args: Array<string> = process.argv;
   public static dataPath: string = resolve('db', 'data.json');
+  // private static id: number = 0;
 
   static async listTasks(): Promise<void> {
+    try {
+      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+            convertData = data ? JSON.parse(data) : null;
 
+      if (!convertData) {
+        console.log('No tasks in database!');
+        return;
+      }
+
+      for (let task of convertData) console.log(task);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   static async createPath(path: string): Promise<void> {
@@ -45,6 +58,8 @@ export default class TaskCLI {
   static async addTask(task?: Task): Promise<void> {
     if (!existsSync(TaskCLI.dataPath)) await TaskCLI.createDataBase();
 
+    // codificar uma forma de nunca repetir os IDs
+
     try {
       const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : [], 
@@ -59,7 +74,7 @@ export default class TaskCLI {
     }
   }
 
-  static async updateTask(id: number, fields: Record<TaskFields, string | boolean>) {
+  static async updateTask(id: number, fields: { description?: string, status?: boolean }) {
     if (!existsSync(TaskCLI.dataPath)) return;
 
     try {
@@ -67,24 +82,36 @@ export default class TaskCLI {
             convertData = data ? JSON.parse(data) : null;
 
       if (!convertData) {
-        console.log('No data to be deleted!');
+        console.log('No data to be updated!');
         return;
       }
 
-      (convertData as Task[]).map((task, i) => {
+      let isTaskExists = false;
+      for (let task of convertData) {
+        if (task.id === id) isTaskExists = true;
+      }
+
+      if (!isTaskExists) throw new Error('This task do not exists in database!');
+
+      const newConvertData = (convertData as Task[]).map((task) => {
         if (task && task.id === id) {
           for (let field in fields) {
-            //task[field] = 
+            const key = field as UpdatableTaskFields,
+                  value = fields[key];
+
+            if (key === 'description' && typeof value === 'string') task.description = value;
+            else if (key === 'status' && typeof value === 'boolean') task.status = value;
           }
-          
-          return null;
         }
+
         return task;
       });
 
-      const reconvertData = JSON.stringify([...convertData]);
-    } catch (err) {
+      const reconvertData = JSON.stringify([...newConvertData]);
 
+      await TaskCLI.createDataBase(reconvertData);
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -119,7 +146,7 @@ export default class TaskCLI {
 }
 
 // (async () => {
-//   for (let i = 0; i < 30; i++) {
+//   for (let i = 1; i < 30; i++) {
 //     await TaskCLI.addTask({
 //       id: i,
 //       description: 'string',
@@ -130,4 +157,6 @@ export default class TaskCLI {
 //   }
 // })();
 
-TaskCLI.deleteTask(6);
+// TaskCLI.deleteTask(24);
+// TaskCLI.updateTask(20, { description: 'teste' })
+// TaskCLI.listTasks();

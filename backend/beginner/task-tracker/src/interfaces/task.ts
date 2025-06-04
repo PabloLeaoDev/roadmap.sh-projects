@@ -7,3 +7,5 @@ export interface Task {
 }
 
 export type TaskFields = 'id' | 'description' | 'status' | 'createdAt' | 'updatedAt';
+
+export type UpdatableTaskFields = 'description' | 'status';

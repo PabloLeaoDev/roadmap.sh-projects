@@ -127,7 +127,7 @@
   },
   {
     "id": 20,
-    "description": "string",
+    "description": "teste",
     "status": true,
     "createdAt": "2025-05-28T14:43:22.812Z",
     "updatedAt": "2025-05-28T14:43:22.812Z"
@@ -152,13 +152,6 @@
     "status": true,
     "createdAt": "2025-05-28T14:43:22.815Z",
     "updatedAt": "2025-05-28T14:43:22.815Z"
-  },
-  {
-    "id": 24,
-    "description": "string",
-    "status": true,
-    "createdAt": "2025-05-28T14:43:22.817Z",
-    "updatedAt": "2025-05-28T14:43:22.817Z"
   },
   {
     "id": 25,
