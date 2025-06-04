@@ -7,7 +7,6 @@ import { resolve } from 'path';
 export default class TaskCLI {
   public static args: Array<string> = process.argv;
   public static dataPath: string = resolve('db', 'data.json');
-  // private static id: number = 0;
 
   static async listTasks(): Promise<void> {
     try {
@@ -55,15 +54,20 @@ export default class TaskCLI {
 
   }
 
-  static async addTask(task?: Task): Promise<void> {
+  static async addTask(task: Task): Promise<void> {
     if (!existsSync(TaskCLI.dataPath)) await TaskCLI.createDataBase();
 
     // codificar uma forma de nunca repetir os IDs
 
     try {
       const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
-            convertData = data ? JSON.parse(data) : [], 
-            concatData = [...convertData, task], 
+            convertData = data ? JSON.parse(data) : [];
+
+      if (convertData.length === 0) {
+        
+      }
+      
+      const concatData = [...convertData, task], 
             reconvertData = JSON.stringify(concatData);
 
       if (reconvertData) TaskCLI.createDataBase(reconvertData);
