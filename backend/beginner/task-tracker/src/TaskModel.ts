@@ -4,13 +4,28 @@ import { Task, UpdatableTaskFields} from './interfaces/task';
 import { promises as fs, existsSync } from 'fs';
 import { resolve } from 'path';
 
-export default class TaskCLI {
-  public static args: Array<string> = process.argv;
+export default class TaskModel {
   public static dataPath: string = resolve('db', 'data.json');
 
-  static async listTasks(): Promise<void> {
+  private static getCurrentDateFormat(): string {
+      const formatDate = new Date().toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          });
+
+      const formatHour = new Date().toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          });
+
+      return `${formatDate} ${formatHour}`;
+  }
+
+  static async listTasks(status?: 'done' | 'todo' | 'inProgress'): Promise<void> {
     try {
-      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+      const data = await fs.readFile(TaskModel.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : null;
 
       if (!convertData) {
@@ -18,7 +33,15 @@ export default class TaskCLI {
         return;
       }
 
-      for (let task of convertData) console.log(task);
+      if (!status) 
+        for (let task of convertData) 
+          console.log(task);
+      else {
+        for (let task of convertData) {
+          if (task.status[status])
+            console.log(task);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -40,49 +63,52 @@ export default class TaskCLI {
 
   static async createDataBase(fileContent = '[]'): Promise<void> {
     try {
-      await fs.writeFile(TaskCLI.dataPath, fileContent);
+      await fs.writeFile(TaskModel.dataPath, fileContent);
     } catch (err) {
       console.log('Creating database...');
-      await TaskCLI.createPath(TaskCLI.dataPath);
-      await TaskCLI.createDataBase();
+
+      await TaskModel.createPath(TaskModel.dataPath);
+      await TaskModel.createDataBase();
     } finally {
       console.log('The file has been saved!')
     }
   }
 
-  static changeTaskStatus() {
-
-  }
-
   static async addTask(task: Task): Promise<void> {
-    if (!existsSync(TaskCLI.dataPath)) await TaskCLI.createDataBase();
-
-    // codificar uma forma de nunca repetir os IDs
+    if (!existsSync(TaskModel.dataPath)) await TaskModel.createDataBase();
 
     try {
-      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+      const data = await fs.readFile(TaskModel.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : [];
 
-      if (convertData.length === 0) {
-        
-      }
+      let id = 1,
+          status = {
+            done: false,
+            todo: true,
+            inProgress: false
+          };
+
+      if (convertData.length > 0) 
+        id = convertData[convertData.length - 1].id + 1;
+
+      task = { id, status, ...task, createdAt: this.getCurrentDateFormat(), updatedAt: this.getCurrentDateFormat() };
       
       const concatData = [...convertData, task], 
             reconvertData = JSON.stringify(concatData);
 
-      if (reconvertData) TaskCLI.createDataBase(reconvertData);
+      if (reconvertData) TaskModel.createDataBase(reconvertData);
 
-      console.log('Task added!');
+      console.log(`Task added successfully (ID: ${id})`);
     } catch (err) {
       console.error(err);
     }
   }
 
-  static async updateTask(id: number, fields: { description?: string, status?: boolean }) {
-    if (!existsSync(TaskCLI.dataPath)) return;
+  static async updateTask(id: number, fields: { description?: string, status?: { done: boolean, todo: boolean, inProgress: boolean } }) {
+    if (!existsSync(TaskModel.dataPath)) return;
 
     try {
-      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+      const data = await fs.readFile(TaskModel.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : null;
 
       if (!convertData) {
@@ -104,7 +130,9 @@ export default class TaskCLI {
                   value = fields[key];
 
             if (key === 'description' && typeof value === 'string') task.description = value;
-            else if (key === 'status' && typeof value === 'boolean') task.status = value;
+            else if (key === 'status' && typeof value === 'object') task.status = value;
+
+            task.updatedAt = this.getCurrentDateFormat();
           }
         }
 
@@ -113,17 +141,17 @@ export default class TaskCLI {
 
       const reconvertData = JSON.stringify([...newConvertData]);
 
-      await TaskCLI.createDataBase(reconvertData);
+      await TaskModel.createDataBase(reconvertData);
     } catch (err) {
       console.error(err);
     }
   }
 
   static async deleteTask(id: number): Promise<void> {
-    if (!existsSync(TaskCLI.dataPath)) return;
+    if (!existsSync(TaskModel.dataPath)) return;
 
     try {
-      const data = await fs.readFile(TaskCLI.dataPath, 'utf-8'),
+      const data = await fs.readFile(TaskModel.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : null;
 
       if (!convertData) {
@@ -142,7 +170,7 @@ export default class TaskCLI {
 
       const reconvertData = JSON.stringify([...convertData]);
 
-      if (reconvertData) TaskCLI.createDataBase(reconvertData);
+      if (reconvertData) TaskModel.createDataBase(reconvertData);
     } catch (err) {
       console.error(err);
     }
@@ -162,5 +190,9 @@ export default class TaskCLI {
 // })();
 
 // TaskCLI.deleteTask(24);
-// TaskCLI.updateTask(20, { description: 'teste' })
-// TaskCLI.listTasks();
+// TaskCLI.updateTask(33, { description: 'Testando Update' })
+// TaskCLI.listTasks('inProgress');
+
+// TaskCLI.addTask({
+//       description: 'teste'
+//     })
