@@ -2,11 +2,13 @@
   "name": "task-tracker",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "npx tsx src/TaskCli.ts"
+    "dev": "npx tsx src/TaskCli.ts",
+    "build": "npx tsc"
   },
   "bin": {
-    "taskcli": "./dist/index.js"
+    "taskcli": "./dist/TaskCli.js"
   },
   "keywords": [],
   "author": "",

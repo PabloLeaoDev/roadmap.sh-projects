@@ -1,9 +1,12 @@
 import { Task, UpdatableTaskFields} from './interfaces/task';
 import { promises as fs, existsSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export default class TaskModel {
-  public static dataPath: string = resolve('db', 'data.json');
+  private static __filename = fileURLToPath(import.meta.url);
+  private static __dirname = dirname(TaskModel.__filename); 
+  public static dataPath: string = resolve(TaskModel.__dirname, 'db', 'data.json');
 
   private static getCurrentDateFormat(): string {
       const formatDate = new Date().toLocaleDateString('pt-BR', {
