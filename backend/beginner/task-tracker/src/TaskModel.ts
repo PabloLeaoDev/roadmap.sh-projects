@@ -54,11 +54,13 @@ export default class TaskModel {
 
   static async createPath(path: string): Promise<void> {
     try {
-       const cleanPath = path.split('\\');
+      const isWindows = process.platform === 'win32', 
+            separator = isWindows ? '\\' : '/',
+            cleanPath = path.split(separator);
 
-      if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop();
+      if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop(); // remove file
 
-      await fs.mkdir(cleanPath.join('\\'), { recursive: true });
+      await fs.mkdir(cleanPath.join(separator), { recursive: true });
 
       console.log('The path has been created!');
     } catch (err) {
