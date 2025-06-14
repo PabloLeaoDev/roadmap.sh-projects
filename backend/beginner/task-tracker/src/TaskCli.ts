@@ -1,5 +1,6 @@
+#!/usr/bin/env node
+
 import TaskModel from "./TaskModel";
-import { TaskStatusCli } from './interfaces/task';
 
 export default class TaskCli {
   private static args: string[];
@@ -11,6 +12,8 @@ export default class TaskCli {
       cleanArgs.shift();
     
     TaskCli.args = cleanArgs;
+
+    this.cliOptions();
   }
 
   async toAddTask(description: string): Promise<void> {
@@ -42,62 +45,64 @@ export default class TaskCli {
   }
 
   async cliOptions(): Promise<void> {
+    try {
+      const id: number | undefined = Number((TaskCli.args[1]));
 
+      let description = '', status = '';
 
-    const id: number | undefined = Number((TaskCli.args[1]));
+      if (!['add', 'update', 'delete', 'list', 'mark-in-progress', 'mark-done'].includes(TaskCli.args[0]))
+        throw new Error('This option does not exists');
 
-    let description = '', status = '';
+      switch (TaskCli.args[0]) {
+        case 'add':
+          description = TaskCli.args[1];
 
-    if (!['add', 'update', 'delete', 'list', 'mark-in-progress', 'mark-done'].includes(TaskCli.args[0]))
-      throw new Error('This option does not exists');
+          if (!description) throw new Error('You have not set a description for this task');
 
-    switch (TaskCli.args[0]) {
-      case 'add':
-        description = TaskCli.args[1];
+          await this.toAddTask(description);
 
-        if (!description) // throw error
+          break;
+        case 'update':
+          if (!id) throw new Error('You have not set an ID to select the task');
 
-        await this.toAddTask(description);
+          description = TaskCli.args[2];
 
-        break;
-      case 'update':
-        if (!id) // throw error
+          if (!description) throw new Error('You have not set a description to the selected task');
 
-        description = TaskCli.args[2];
+          await this.toUpdateDescriptionTask(id, description);
 
-        if (!description) // throw error
+          break;
+        case 'delete':
+          if (!id) throw new Error('You have not set an ID to delete a task');
 
-        await this.toUpdateDescriptionTask(id, description);
+          await this.toDeleteTask(id);
 
-        break;
-      case 'delete':
-        if (!id) // throw error
+          break;
+        case 'list':
+          status = TaskCli.args[1];
 
-        await this.toDeleteTask(id);
+          if (status) {
+            if (status === 'in-progress') 
+              await this.toListTaskByStatus('inProgress');
+            else
+              await this.toListTaskByStatus(status as ("done" | "todo"));
+          } else await this.toListAllTasks();
 
-        break;
-      case 'list':
-        status = TaskCli.args[1];
+          break;
+        default:
+          status = TaskCli.args[0];
 
-        if (status) {
-          if (status === 'in-progress') 
-            await this.toListTaskByStatus('inProgress');
-          else
-            await this.toListTaskByStatus(status as ("done" | "todo"));
-        } else await this.toListAllTasks();
+          if (status) {
+            if (status === 'mark-in-progress')
+              await this.toUpdateStatusTask(id, 'inProgress');
+            else if (status === 'mark-done')
+              await this.toUpdateStatusTask(id, 'done');
+          }
 
-        break;
-      default:
-        status = TaskCli.args[0];
-
-        if (status) {
-          if (status === 'mark-in-progress')
-            await this.toUpdateStatusTask(id, 'inProgress');
-          else if (status === 'mark-done')
-            await this.toUpdateStatusTask(id, 'done');
-        }
-
-        break;
+          break;
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 }

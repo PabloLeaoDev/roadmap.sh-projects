@@ -6,7 +6,7 @@
     "dev": "npx tsx src/TaskCli.ts"
   },
   "bin": {
-    "task-cli": "./dist/index.js"
+    "taskcli": "./dist/index.js"
   },
   "keywords": [],
   "author": "",

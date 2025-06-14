@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Task, UpdatableTaskFields} from './interfaces/task';
 import { promises as fs, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -33,13 +31,17 @@ export default class TaskModel {
         return;
       }
 
-      if (!status) 
-        for (let task of convertData) 
-          console.log(task);
-      else {
+      if (!status) {
         for (let task of convertData) {
-          if (task.status[status])
-            console.log(task);
+          console.log(`ID: ${task.id}\nDescription: ${task.description}\nStatus: ${task.status['todo'] ? 'To Do' : task.status['inProgress'] ? 'In Progress' : 'Done'}\nCreated At: ${task.createdAt}\nUpdated At: ${task.updatedAt}`);
+          console.log(`----------------------------------`);
+        }
+      } else {
+        for (let task of convertData) {
+          if (task.status[status]) {
+            console.log(`ID: ${task.id}\nDescription: ${task.description}\nStatus: ${status}\nCreated At: ${task.createdAt}\nUpdated At: ${task.updatedAt}`);
+          console.log(`----------------------------------`);
+          }
         }
       }
     } catch (err) {
