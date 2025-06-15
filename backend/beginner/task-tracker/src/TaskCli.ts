@@ -84,8 +84,11 @@ export default class TaskCli {
           if (status) {
             if (status === 'in-progress') 
               await this.toListTaskByStatus('inProgress');
-            else
-              await this.toListTaskByStatus(status as ("done" | "todo"));
+            else if (status === 'done')
+              await this.toListTaskByStatus('done');
+            else if (status === 'todo')
+              await this.toListTaskByStatus('todo');
+            else throw new Error('This option does not exists!');
           } else await this.toListAllTasks();
 
           break;

@@ -42,12 +42,13 @@ export default class TaskModel {
       } else {
         for (let task of convertData) {
           if (task.status[status]) {
-            console.log(`ID: ${task.id}\nDescription: ${task.description}\nStatus: ${status}\nCreated At: ${task.createdAt}\nUpdated At: ${task.updatedAt}`);
+            console.log(`ID: ${task.id}\nDescription: ${task.description}\nStatus: ${task.status['todo'] ? 'To Do' : task.status['inProgress'] ? 'In Progress' : 'Done'}\nCreated At: ${task.createdAt}\nUpdated At: ${task.updatedAt}`);
           console.log(`----------------------------------`);
           }
         }
       }
     } catch (err) {
+      (err as Error).message = 'Error listing tasks. No data found! Please create a task first.';
       console.error(err);
     }
   }
@@ -183,23 +184,3 @@ export default class TaskModel {
     }
   }
 }
-
-// (async () => {
-//   for (let i = 1; i < 30; i++) {
-//     await TaskCLI.addTask({
-//       id: i,
-//       description: 'string',
-//       status: true,
-//       createdAt: new Date(),
-//       updatedAt: new Date()
-//     })
-//   }
-// })();
-
-// TaskCLI.deleteTask(24);
-// TaskCLI.updateTask(33, { description: 'Testando Update' })
-// TaskCLI.listTasks('inProgress');
-
-// TaskCLI.addTask({
-//       description: 'teste'
-//     })
