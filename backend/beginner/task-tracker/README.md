@@ -117,4 +117,4 @@ Task statuses can be:
 > This is a simple CLI project built with Node.js, intended for learning purposes.  
 > It can be expanded with features like file/database persistence, filtering, and more.
 
-### Project URL: https://roadmap.sh/projects/task-tracker
+### [Project URL](https://roadmap.sh/projects/task-tracker)
