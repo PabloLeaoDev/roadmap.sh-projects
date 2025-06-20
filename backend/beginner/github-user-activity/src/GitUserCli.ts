@@ -36,7 +36,9 @@ export default class GitUserCli {
 
   public useIssueCommentEvent(): void {}
 
-  public useIssuesEvent(): void {}
+  public useIssuesEvent(): void {
+    // Opened a new issue in <user>/developer-roadmap
+  }
 
   public useMemberEvent(): void {}
 
@@ -50,18 +52,37 @@ export default class GitUserCli {
 
   public usePullRequestReviewThreadEvent(): void {}
 
-  public usePushEvent(): void {}
+  public usePushEvent(): void {
+    // Pushed 3 commits to <user>/developer-roadmap
+  }
 
   public useReleaseEvent(): void {}
 
   public useSponsorshipEvent(): void {}
 
-  public useWatchEvent(): void {}
+  public useWatchEvent(): void {
+    // Starred <user>/developer-roadmap
+  }
 
   public async handleUserEventData(user: string): Promise<void> {
     const userData = await GitUserModel.getUserAtvData(user);
 
     if (!userData) return;
+
+    /*
+    [
+      event: {
+        repo_url: {
+          date: number (count)
+          ...        
+        }
+      }
+    ]
+    
+    essa será a estrutura da constante events
+    */
+
+    const events = [];
 
     for (let data of userData) {
       switch (data.type) {
