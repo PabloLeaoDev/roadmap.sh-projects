@@ -1,8 +1,6 @@
-import UserEventData from './interfaces/UserData.interface';
+import UserEventData from './interfaces/UserEventData.interface';
 
 export default class GitUserModel {
-  // private static data: Object[];
-
   public static async getUserAtvData(user: string): Promise<UserEventData[] | undefined> {
     try {
       const res = await fetch(`https://api.github.com/users/${user}/events`);
@@ -17,5 +15,3 @@ export default class GitUserModel {
     }
   }
 }
-
-// GitUserModel.getUserAtvData('kamranahmedse');
