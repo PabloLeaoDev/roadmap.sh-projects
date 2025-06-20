@@ -4,11 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx tsx src/TaskCli.ts",
+    "dev": "npx tsx src/GitUserCli.ts",
     "build": "npx tsc"
   },
   "bin": {
-    "taskcli": "./dist/TaskCli.js"
+    "gitusercli": "./dist/GitUserCli.js"
   },
   "keywords": [],
   "author": "",
