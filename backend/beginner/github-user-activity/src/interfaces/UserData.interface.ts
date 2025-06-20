@@ -1,6 +1,6 @@
-import Commit from "./Commit.interface"
+import { Payload } from "./Payload.type"
 
-export default interface UserData {
+export default interface UserEventData {
   id: string,
   type: string,
   actor: {
@@ -16,16 +16,7 @@ export default interface UserData {
     name: string,
     url: string
   },
-  payload: {
-    repository_id: number,
-    push_id: number,
-    size: number,
-    distinct_size: number,
-    ref: string,
-    head: string,
-    before: string
-    commits: Commit[]
-  },
+  payload: Payload,
   public: boolean,
   created_at: Date
 }
