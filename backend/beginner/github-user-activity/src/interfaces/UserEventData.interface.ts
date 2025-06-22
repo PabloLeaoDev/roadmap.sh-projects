@@ -18,5 +18,5 @@ export default interface UserEventData {
   },
   payload: Payload,
   public: boolean,
-  created_at: Date
+  created_at: string
 }

@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-import GitUserModel from "./GitUserModel";
+import GitUserModel from './GitUserModel';
+import UserEventData from './interfaces/UserEventData.interface';
+import Event from './interfaces/Event.interface';
 
 export default class GitUserCli {
   private static args: string[];
+  private static events: Event[];
 
   constructor() {
     const cleanArgs = process.argv;
@@ -24,125 +27,184 @@ export default class GitUserCli {
     }
   }
 
-  public useCommitCommentEvent(): void {}
+  public useCommitCommentEvent(evt: Event): void {}
 
-  public useCreateEvent(): void {}
+  public useCreateEvent(evt: Event): void {}
 
-  public useDeleteEvent(): void {}
+  public useDeleteEvent(evt: Event): void {}
 
-  public useForkEvent(): void {}
+  public useForkEvent(evt: Event): void {}
 
-  public useGollumEvent(): void {}
+  public useGollumEvent(evt: Event): void {}
 
-  public useIssueCommentEvent(): void {}
+  public useIssueCommentEvent(evt: Event): void {}
 
-  public useIssuesEvent(): void {
+  public useIssuesEvent(evt: Event): void {
     // Opened a new issue in <user>/developer-roadmap
   }
 
-  public useMemberEvent(): void {}
+  public useMemberEvent(evt: Event): void {}
 
-  public usePublicEvent(): void {}
+  public usePublicEvent(evt: Event): void {}
 
-  public usePullRequestEvent(): void {}
+  public usePullRequestEvent(evt: Event): void {}
 
-  public usePullRequestReviewEvent(): void {}
+  public usePullRequestReviewEvent(evt: Event): void {}
 
-  public usePullRequestReviewCommentEvent(): void {}
+  public usePullRequestReviewCommentEvent(evt: Event): void {}
 
-  public usePullRequestReviewThreadEvent(): void {}
+  public usePullRequestReviewThreadEvent(evt: Event): void {}
 
-  public usePushEvent(): void {
-    // Pushed 3 commits to <user>/developer-roadmap
+  public usePushEvent(evt: Event): void {
+    // evt.forEach((e) => {
+    //   console.log('Pushed 3 commits to <user>/developer-roadmap');
+
+    // });
   }
 
-  public useReleaseEvent(): void {}
+  public useReleaseEvent(evt: Event): void {}
 
-  public useSponsorshipEvent(): void {}
+  public useSponsorshipEvent(evt: Event): void {}
 
-  public useWatchEvent(): void {
+  public useWatchEvent(evt: Event): void {
     // Starred <user>/developer-roadmap
   }
 
   public async handleUserEventData(user: string): Promise<void> {
-    const userData = await GitUserModel.getUserAtvData(user);
+    try {
+      const userData = await GitUserModel.getUserAtvData(user);
 
-    if (!userData) return;
+      console.log(userData?.length);
 
-    /*
-    [
-      event: {
-        repo_url: {
-          date: number (count)
-          ...        
+      if (!userData) return;
+
+      const events: Event[] = [];
+
+      const populateEvent = (dataEvent: UserEventData) => {
+        let isEventAlreadyExists = false;
+
+        events.forEach((evt) => {
+          if (events.length > 0 && evt.type === dataEvent.type) isEventAlreadyExists = true;
+        });
+
+        const event: Event = {
+          type: '',
+          repos: [
+            {
+              name: '',
+              count: []
+            }
+          ]
+        };
+
+        const repo = dataEvent.repo.name;
+
+        const dateArr = dataEvent.created_at.split('T'),
+              date = dateArr[0];
+
+        if (!isEventAlreadyExists) {
+          event.type = dataEvent.type;
+          event.repos[0].name = repo;
+          event.repos[0].count = [{ date, total: 1 }];
+
+          events.push(event);
+        } else {
+          events.forEach((evt) => {
+            if (evt.type !== dataEvent.type) return;
+
+            let isRepoAlreadyExists = false;
+
+            evt.repos.forEach((rp) => {
+              if (rp.name === repo) {
+                let isDateAlreadyExists = false;
+  
+                rp.count.forEach((ct) => {
+                  if (ct.date === date) {
+                    ct.total++;
+                    isDateAlreadyExists = true;
+                  }
+                });
+  
+                if (!isDateAlreadyExists) rp.count.push({ date, total: 1 });
+
+                isRepoAlreadyExists = true;
+              }
+            });
+
+            if (!isRepoAlreadyExists) {
+              evt.repos.push({
+                name: repo,
+                count: [{ date, total: 1 }]
+              });
+            }
+          });
+        }
+      };
+
+      for (let data of userData) populateEvent(data);
+
+      GitUserCli.events = events;
+
+      for (let evt of events) {
+        switch (evt.type) {
+          case 'CommitCommentEvent':
+            this.useCommitCommentEvent(evt);
+            break;
+          case 'CreateEvent':
+            this.useCreateEvent(evt);
+            break;
+          case 'DeleteEvent':
+            this.useDeleteEvent(evt);
+            break;
+          case 'ForkEvent':
+            this.useForkEvent(evt);
+            break;
+          case 'GollumEvent':
+            this.useGollumEvent(evt);
+            break;
+          case 'IssueCommentEvent':
+            this.useIssueCommentEvent(evt);
+            break;
+          case 'IssuesEvent':
+            this.useIssuesEvent(evt);
+            break;
+          case 'MemberEvent':
+            this.useMemberEvent(evt);
+            break;
+          case 'PublicEvent':
+            this.usePublicEvent(evt);
+            break;
+          case 'PullRequestEvent':
+            this.usePullRequestEvent(evt);
+            break;
+          case 'PullRequestReviewEvent':
+            this.usePullRequestReviewEvent(evt);
+            break;
+          case 'PullRequestReviewCommentEvent':
+            this.usePullRequestReviewCommentEvent(evt);
+            break;
+          case 'PullRequestReviewThreadEvent':
+            this.usePullRequestReviewThreadEvent(evt);
+            break;
+          case 'PushEvent':
+            this.usePushEvent(evt);
+            break;
+          case 'ReleaseEvent':
+            this.useReleaseEvent(evt);
+            break;
+          case 'SponsorshipEvent':
+            this.useSponsorshipEvent(evt);
+            break;
+          case 'WatchEvent':
+            this.useWatchEvent(evt);
+            break;
         }
       }
-    ]
-    
-    essa será a estrutura da constante events
-    */
-
-    const events = [];
-
-    for (let data of userData) {
-      switch (data.type) {
-        case 'CommitCommentEvent':
-          this.useCommitCommentEvent();
-          break;
-        case 'CreateEvent':
-          this.useCreateEvent();
-          break;
-        case 'DeleteEvent':
-          this.useDeleteEvent();
-          break;
-        case 'ForkEvent':
-          this.useForkEvent();
-          break;
-        case 'GollumEvent':
-          this.useGollumEvent();
-          break;
-        case 'IssueCommentEvent':
-          this.useIssueCommentEvent();
-          break;
-        case 'IssuesEvent':
-          this.useIssuesEvent();
-          break;
-        case 'MemberEvent':
-          this.useMemberEvent();
-          break;
-        case 'PublicEvent':
-          this.usePublicEvent();
-          break;
-        case 'PullRequestEvent':
-          this.usePullRequestEvent();
-          break;
-        case 'PullRequestReviewEvent':
-          this.usePullRequestReviewEvent();
-          break;
-        case 'PullRequestReviewCommentEvent':
-          this.usePullRequestReviewCommentEvent();
-          break;
-        case 'PullRequestReviewThreadEvent':
-          this.usePullRequestReviewThreadEvent();
-          break;
-        case 'PushEvent':
-          this.usePushEvent();
-          break;
-        case 'ReleaseEvent':
-          this.useReleaseEvent();
-          break;
-        case 'SponsorshipEvent':
-          this.useSponsorshipEvent();
-          break;
-        case 'WatchEvent':
-          this.useWatchEvent();
-          break;
-        default:
-          console.warn(`Evento não tratado: ${data.type}`);
-          break;
-      }
+    } catch (err) {
+      console.error(err);
     }
   }
 }
 
-new GitUserCli();
+// new GitUserCli().handleUserEventData('microsoft');
+new GitUserCli().handleUserEventData('PabloLeaoDev');
