@@ -27,54 +27,146 @@ export default class GitUserCli {
     }
   }
 
-  public useCommitCommentEvent(evt: Event): void {}
+  public useCommitCommentEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`A commit comment created in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
-  public useCreateEvent(evt: Event): void {}
+  public useCreateEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`A git branch or tag have been created ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
-  public useDeleteEvent(evt: Event): void {}
+  public useDeleteEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`A git branch or tag have been deleted in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
-  public useForkEvent(evt: Event): void {}
+  public useForkEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`The repository <${rp.name}> was forked at ${ct.date}`);
+      })
+    });
+  }
 
-  public useGollumEvent(evt: Event): void {}
+  public useGollumEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`A wiki page has been created or updated ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
-  public useIssueCommentEvent(evt: Event): void {}
+  public useIssueCommentEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`There was an issue or pull request comment ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
   public useIssuesEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related an issue ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
     // Opened a new issue in <user>/developer-roadmap
   }
 
-  public useMemberEvent(evt: Event): void {}
-
-  public usePublicEvent(evt: Event): void {}
-
-  public usePullRequestEvent(evt: Event): void {}
-
-  public usePullRequestReviewEvent(evt: Event): void {}
-
-  public usePullRequestReviewCommentEvent(evt: Event): void {}
-
-  public usePullRequestReviewThreadEvent(evt: Event): void {}
-
-  public usePushEvent(evt: Event): void {
-    // evt.forEach((e) => {
-    //   console.log('Pushed 3 commits to <user>/developer-roadmap');
-
-    // });
+  public useMemberEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to repository collaborators in <${rp.name}> at ${ct.date}`);
+      })
+    });
   }
 
-  public useReleaseEvent(evt: Event): void {}
+  public usePublicEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`A private repository <${rp.name}> is made public at ${ct.date}`);
+      })
+    });
+  }
 
-  public useSponsorshipEvent(evt: Event): void {}
+  public usePullRequestEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to pull requests ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public usePullRequestReviewEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to pull request reviews ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public usePullRequestReviewCommentEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to pull request review comments ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public usePullRequestReviewThreadEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to a comment thread on a pull request being marked as resolved or unresolved in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public usePushEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Pushed ${ct.total} commits to <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public useReleaseEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Was related to a release in <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
+
+  public useSponsorshipEvent(evt: Event): void {
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Sponsored <${rp.name}> at ${ct.date}`);
+      })
+    });
+  }
 
   public useWatchEvent(evt: Event): void {
-    // Starred <user>/developer-roadmap
+    evt.repos.forEach((rp) => {
+      rp.count.forEach((ct) => {
+        console.log(`Starred <${rp.name}> at ${ct.date}`);
+      })
+    });
   }
 
   public async handleUserEventData(user: string): Promise<void> {
     try {
       const userData = await GitUserModel.getUserAtvData(user);
-
-      console.log(userData?.length);
 
       if (!userData) return;
 
@@ -84,7 +176,8 @@ export default class GitUserCli {
         let isEventAlreadyExists = false;
 
         events.forEach((evt) => {
-          if (events.length > 0 && evt.type === dataEvent.type) isEventAlreadyExists = true;
+          if (events.length > 0 && evt.type === dataEvent.type) 
+            isEventAlreadyExists = true;
         });
 
         const event: Event = {
@@ -206,5 +299,4 @@ export default class GitUserCli {
   }
 }
 
-// new GitUserCli().handleUserEventData('microsoft');
-new GitUserCli().handleUserEventData('PabloLeaoDev');
+new GitUserCli().handleUserEventData('microsoft');
