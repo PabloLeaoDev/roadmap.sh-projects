@@ -5,7 +5,10 @@ export default class GitUserModel {
     try {
       const res = await fetch(`https://api.github.com/users/${user}/events`);
 
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      if (!res.ok) {
+        console.error('The GitHub user was not found (probably is invalid)');
+        throw new Error(`HTTP error! Status Code: ${res.status}`)
+      };
 
       const data: UserEventData[] = await res.json();
 

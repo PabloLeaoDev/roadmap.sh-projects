@@ -5,7 +5,7 @@ import Event from './interfaces/Event.interface';
 
 export default class GitUserCli {
   private static args: string[];
-  private static events: Event[];
+  private static events: Event[] = [];
 
   constructor() {
     const cleanArgs = process.argv;
@@ -14,14 +14,80 @@ export default class GitUserCli {
       cleanArgs.shift();
     
     GitUserCli.args = cleanArgs;
+    const user: string | undefined = GitUserCli.args[1];
 
-    this.cliOptions();
+    if (user === undefined) {
+      console.error('Please provide a GitHub username.');
+      process.exit(1);
+    }
+
+    if (GitUserCli.args.length !== 2) {
+      console.error('Please provide a valid number of arguments.');
+      process.exit(1);
+    }
+
+    this.cliOptions(user);
   }
 
-  public async cliOptions(): Promise<void> {
+  public async cliOptions(user: string): Promise<void> {
     try {
-      const user: string | undefined = GitUserCli.args[1];
+      await this.handleUserEventData(user);
 
+      for (let evt of GitUserCli.events) {
+        switch (evt.type) {
+          case 'CommitCommentEvent':
+            this.useCommitCommentEvent(evt);
+            break;
+          case 'CreateEvent':
+            this.useCreateEvent(evt);
+            break;
+          case 'DeleteEvent':
+            this.useDeleteEvent(evt);
+            break;
+          case 'ForkEvent':
+            this.useForkEvent(evt);
+            break;
+          case 'GollumEvent':
+            this.useGollumEvent(evt);
+            break;
+          case 'IssueCommentEvent':
+            this.useIssueCommentEvent(evt);
+            break;
+          case 'IssuesEvent':
+            this.useIssuesEvent(evt);
+            break;
+          case 'MemberEvent':
+            this.useMemberEvent(evt);
+            break;
+          case 'PublicEvent':
+            this.usePublicEvent(evt);
+            break;
+          case 'PullRequestEvent':
+            this.usePullRequestEvent(evt);
+            break;
+          case 'PullRequestReviewEvent':
+            this.usePullRequestReviewEvent(evt);
+            break;
+          case 'PullRequestReviewCommentEvent':
+            this.usePullRequestReviewCommentEvent(evt);
+            break;
+          case 'PullRequestReviewThreadEvent':
+            this.usePullRequestReviewThreadEvent(evt);
+            break;
+          case 'PushEvent':
+            this.usePushEvent(evt);
+            break;
+          case 'ReleaseEvent':
+            this.useReleaseEvent(evt);
+            break;
+          case 'SponsorshipEvent':
+            this.useSponsorshipEvent(evt);
+            break;
+          case 'WatchEvent':
+            this.useWatchEvent(evt);
+            break;
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -78,10 +144,9 @@ export default class GitUserCli {
   public useIssuesEvent(evt: Event): void {
     evt.repos.forEach((rp) => {
       rp.count.forEach((ct) => {
-        console.log(`Was related an issue ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
+        console.log(`Opened a new issue ${ct.total} ${(ct.total > 1) ? 'times' : 'time'} in <${rp.name}> at ${ct.date}`);
       })
     });
-    // Opened a new issue in <user>/developer-roadmap
   }
 
   public useMemberEvent(evt: Event): void {
@@ -238,65 +303,10 @@ export default class GitUserCli {
 
       GitUserCli.events = events;
 
-      for (let evt of events) {
-        switch (evt.type) {
-          case 'CommitCommentEvent':
-            this.useCommitCommentEvent(evt);
-            break;
-          case 'CreateEvent':
-            this.useCreateEvent(evt);
-            break;
-          case 'DeleteEvent':
-            this.useDeleteEvent(evt);
-            break;
-          case 'ForkEvent':
-            this.useForkEvent(evt);
-            break;
-          case 'GollumEvent':
-            this.useGollumEvent(evt);
-            break;
-          case 'IssueCommentEvent':
-            this.useIssueCommentEvent(evt);
-            break;
-          case 'IssuesEvent':
-            this.useIssuesEvent(evt);
-            break;
-          case 'MemberEvent':
-            this.useMemberEvent(evt);
-            break;
-          case 'PublicEvent':
-            this.usePublicEvent(evt);
-            break;
-          case 'PullRequestEvent':
-            this.usePullRequestEvent(evt);
-            break;
-          case 'PullRequestReviewEvent':
-            this.usePullRequestReviewEvent(evt);
-            break;
-          case 'PullRequestReviewCommentEvent':
-            this.usePullRequestReviewCommentEvent(evt);
-            break;
-          case 'PullRequestReviewThreadEvent':
-            this.usePullRequestReviewThreadEvent(evt);
-            break;
-          case 'PushEvent':
-            this.usePushEvent(evt);
-            break;
-          case 'ReleaseEvent':
-            this.useReleaseEvent(evt);
-            break;
-          case 'SponsorshipEvent':
-            this.useSponsorshipEvent(evt);
-            break;
-          case 'WatchEvent':
-            this.useWatchEvent(evt);
-            break;
-        }
-      }
     } catch (err) {
       console.error(err);
     }
   }
 }
 
-new GitUserCli().handleUserEventData('microsoft');
+new GitUserCli();
