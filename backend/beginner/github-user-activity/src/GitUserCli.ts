@@ -17,12 +17,17 @@ export default class GitUserCli {
     const user: string | undefined = GitUserCli.args[1];
 
     if (user === undefined) {
-      console.error('Please provide a GitHub username.');
+      console.error('Please provide a GitHub username');
+      process.exit(1);
+    }
+
+    if (GitUserCli.args[0] !== 'gituseratv') {
+      console.error('Please use the correct "gituseratv" command to call the user activities');
       process.exit(1);
     }
 
     if (GitUserCli.args.length !== 2) {
-      console.error('Please provide a valid number of arguments.');
+      console.error('Please provide a valid number of arguments');
       process.exit(1);
     }
 
@@ -32,6 +37,8 @@ export default class GitUserCli {
   public async cliOptions(user: string): Promise<void> {
     try {
       await this.handleUserEventData(user);
+
+      console.log(`${user} activities:\n`);
 
       for (let evt of GitUserCli.events) {
         switch (evt.type) {
@@ -88,6 +95,8 @@ export default class GitUserCli {
             break;
         }
       }
+
+      console.log('\n');
     } catch (err) {
       console.error(err);
     }

@@ -8,7 +8,7 @@
     "build": "npx tsc"
   },
   "bin": {
-    "gitusercli": "./dist/GitUserCli.js"
+    "gituseratv": "./dist/GitUserCli.js"
   },
   "keywords": [],
   "author": "",
