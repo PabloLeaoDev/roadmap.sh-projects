@@ -14,19 +14,14 @@ export default class GitUserCli {
       cleanArgs.shift();
     
     GitUserCli.args = cleanArgs;
-    const user: string | undefined = GitUserCli.args[1];
+    const user: string | undefined = GitUserCli.args[0];
 
     if (user === undefined) {
       console.error('Please provide a GitHub username');
       process.exit(1);
     }
 
-    if (GitUserCli.args[0] !== 'gituseratv') {
-      console.error('Please use the correct "gituseratv" command to call the user activities');
-      process.exit(1);
-    }
-
-    if (GitUserCli.args.length !== 2) {
+    if (GitUserCli.args.length !== 1) {
       console.error('Please provide a valid number of arguments');
       process.exit(1);
     }
