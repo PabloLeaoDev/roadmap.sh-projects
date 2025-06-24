@@ -1,0 +1,23 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "npx tsx src/ExpenseCli.ts",
+    "build": "npx tsc",
+    "test": "npx tsx --test src/test/ExpenseTkr.test.ts"
+  },
+  "bin": {
+    "expensetkr": "./dist/ExpenseCli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
