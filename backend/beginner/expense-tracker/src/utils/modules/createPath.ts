@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 
 export default async function createPath(path: string): Promise<void> {
   try {
@@ -8,7 +8,8 @@ export default async function createPath(path: string): Promise<void> {
 
     if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop(); // remove file
 
-    await fs.mkdir(cleanPath.join(separator), { recursive: true });
+    if (!existsSync(cleanPath.join(separator))) 
+      await fs.mkdir(cleanPath.join(separator), { recursive: true });
 
     console.log('The path has been created!');
   } catch (err) {

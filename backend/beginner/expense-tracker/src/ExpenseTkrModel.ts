@@ -32,7 +32,7 @@ export default class ExpenseTkrModel {
 
   static async addExpense(expense: Expense): Promise<void> {
     try {
-      if (!existsSync(ExpenseTkrModel.dataPath)) await createDataBase(ExpenseTkrModel.dataPath);
+      if (!existsSync(ExpenseTkrModel.dataPath)) await createDataBase('[]', ExpenseTkrModel.dataPath);
 
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
             convertData = data ? JSON.parse(data) : [];
@@ -47,9 +47,9 @@ export default class ExpenseTkrModel {
       const concatData = [...convertData, expense], 
             reconvertData = JSON.stringify(concatData);
 
-      if (reconvertData) createDataBase(reconvertData);
+      if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
 
-      console.log(`Exepense added successfully (ID: ${id})`);
+      console.log(`Expense added successfully (ID: ${id})`);
     } catch (err) {
       console.error(err);
     }
@@ -92,7 +92,7 @@ export default class ExpenseTkrModel {
 
       const reconvertData = JSON.stringify([...newConvertData]);
 
-      await createDataBase(reconvertData);
+      await createDataBase(reconvertData, ExpenseTkrModel.dataPath);
     } catch (err) {
       console.error(err);
     }
@@ -122,7 +122,7 @@ export default class ExpenseTkrModel {
 
       const reconvertData = JSON.stringify([...convertData]);
 
-      if (reconvertData) createDataBase(reconvertData);
+      if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
     } catch (err) {
       console.error(err);
     }
