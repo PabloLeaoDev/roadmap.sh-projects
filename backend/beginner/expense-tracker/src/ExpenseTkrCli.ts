@@ -6,11 +6,10 @@ export default class ExpenseTkrCli {
   private static args: string[];
 
   constructor() {
-    const cleanArgs = process.argv;
+    const cleanArgs = process.argv.slice(2);
 
-    for (let i = 0; i < 2; i++) 
-      cleanArgs.shift();
-    
+    console.log(cleanArgs);
+
     ExpenseTkrCli.args = cleanArgs;
 
     ExpenseTkrCli.cliOptions();
