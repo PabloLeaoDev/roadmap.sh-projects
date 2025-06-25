@@ -8,8 +8,6 @@ export default class ExpenseTkrCli {
   constructor() {
     const cleanArgs = process.argv.slice(2);
 
-    console.log(cleanArgs);
-
     ExpenseTkrCli.args = cleanArgs;
 
     ExpenseTkrCli.cliOptions();
@@ -105,4 +103,4 @@ export default class ExpenseTkrCli {
   }
 }
 
-new ExpenseTkrCli();
+// new ExpenseTkrCli();

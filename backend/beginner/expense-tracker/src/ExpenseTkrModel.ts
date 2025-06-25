@@ -12,17 +12,33 @@ export default class ExpenseTkrModel {
   static async listExpenses(month?: number): Promise<void> {
     try {
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
-            convertData = data ? JSON.parse(data) : null;
+            convertData: Expense[] | null = data ? JSON.parse(data) : null;
 
       if (!convertData) {
         console.log('No tasks in database!');
         return;
       }
 
+      console.log(`-------------------------------------`);
       console.log('# ID  Date       Description  Amount');
-      for (let expense of convertData) {
-        console.log(`# ${expense.id}   ${expense.date}  ${expense.description}        $${expense.amount}`);
-        console.log(`----------------------------------`);
+      console.log(`-------------------------------------`);
+
+      let expenseMonth = 0;
+
+      if (!month) {
+        for (let expense of convertData) {
+          console.log(`# ${expense.id}   ${expense.date}  ${expense.description}        $${expense.amount}`);
+          console.log(`-------------------------------------`);
+        }
+      } else {
+        for (let expense of convertData) {
+          expenseMonth = Number(expense.date?.split('/')[1]);
+
+          if (expenseMonth === month) {
+            console.log(`# ${expense.id}   ${expense.date}  ${expense.description}        $${expense.amount}`);
+            console.log(`-------------------------------------`);
+          }
+        }
       }
     } catch (err) {
       (err as Error).message = 'Error listing expenses. No data found! Please create a expense first.';
@@ -67,12 +83,12 @@ export default class ExpenseTkrModel {
         return;
       }
 
-      let isTaskExists = false;
-      for (let task of convertData) {
-        if (task.id === id) isTaskExists = true;
+      let isExpenseExists = false;
+      for (let expense of convertData) {
+        if (expense.id === id) isExpenseExists = true;
       }
 
-      if (!isTaskExists) throw new Error('This task do not exists in database!');
+      if (!isExpenseExists) throw new Error('This task do not exists in database!');
 
       const newConvertData = (convertData as Expense[]).map((expense) => {
         if (expense && expense.id === id) {
@@ -82,9 +98,9 @@ export default class ExpenseTkrModel {
 
             if (key === 'description' && typeof value === 'string') expense.description = value;
             else if (key === 'amount' && typeof value === 'number') expense.amount = value;
-
-            expense.date = getCurrentDateFormat();
           }
+
+          expense.date = getCurrentDateFormat();
         }
 
         return expense;
