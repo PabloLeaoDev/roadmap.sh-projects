@@ -45,7 +45,7 @@ export default class ExpenseTkrCli {
     try {
       const id: number | undefined = Number((ExpenseTkrCli.args[1]));
 
-      let description = '', amount = 0, month = 0;
+      let description = '', amount = 0, month = 0, argFlags = ['', ''];
 
       if (!['add', 'update', 'delete', 'list', 'summary'].includes(ExpenseTkrCli.args[0]))
         throw new Error('This option does not exists');
@@ -70,7 +70,21 @@ export default class ExpenseTkrCli {
         case 'update':
           if (!id) throw new Error('You have not set an ID to select the expense');
 
-          description = ExpenseTkrCli.args[2];
+          if (ExpenseTkrCli.args.length > 6) throw new Error('Please use a valid number of args');
+          
+          argFlags[0] = ExpenseTkrCli.args[2];
+
+          if (argFlags[0] !== '--description' && argFlags[0] !== '--amount') throw new Error('Please use the "--description" or "--amount" option');
+
+          if (ExpenseTkrCli.args.length > 4) {
+
+          } else {
+
+          }
+
+
+
+          description = ExpenseTkrCli.args[3];
 
           if (!description) throw new Error('You have not set a description to the selected expense');
 

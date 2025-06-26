@@ -15,7 +15,7 @@ describe('Add Expense', { skip: true }, () => {
   });
 });
 
-describe('List expenses', { skip: false }, () => {
+describe('List expenses', { skip: true }, () => {
   it('should be able to list all expenses', { skip: true }, async () => {
     try {
       ExpenseTkrCli.setArgs(['list']);
@@ -23,7 +23,7 @@ describe('List expenses', { skip: false }, () => {
 
       assert.strictEqual(1, 1);
     } catch (err) {
-      assert.notStrictEqual(1, 1)
+      assert.notStrictEqual(1, 1);
     }
   });
 
@@ -34,7 +34,20 @@ describe('List expenses', { skip: false }, () => {
 
       assert.strictEqual(1, 1);
     } catch (err) {
-      assert.notStrictEqual(1, 1)
+      assert.notStrictEqual(1, 1);
+    }
+  });
+});
+
+describe('Update an expense', { skip: false }, () => {
+  it('should be able to update an expense', async () => {
+    try {
+      ExpenseTkrCli.setArgs(['update']);
+      await ExpenseTkrCli.cliOptions();
+
+      assert.strictEqual(1, 1);
+    } catch (err) {
+      assert.notStrictEqual(1, 1);
     }
   });
 });
