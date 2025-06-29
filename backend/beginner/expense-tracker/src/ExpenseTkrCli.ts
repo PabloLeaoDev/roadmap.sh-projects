@@ -41,11 +41,11 @@ export default class ExpenseTkrCli {
     await ExpenseTkrModel.deleteExpense(id);
   }
 
-  static async cliOptions(): Promise<void> {
+  static async cliOptions(): Promise<number> {
     try {
       const id: number | undefined = Number((ExpenseTkrCli.args[1]));
 
-      let description = '', amount = 0, month = 0, argFlags = ['', ''];
+      let description = '', amount = 0, month = 0, argFlags: string[] = [];
 
       if (!['add', 'update', 'delete', 'list', 'summary'].includes(ExpenseTkrCli.args[0]))
         throw new Error('This option does not exists');
@@ -68,27 +68,59 @@ export default class ExpenseTkrCli {
 
           break;
         case 'update':
+          if (ExpenseTkrCli.args.length !== 4 && ExpenseTkrCli.args.length !== 6) throw new Error('Please use a valid number of args');
+
           if (!id) throw new Error('You have not set an ID to select the expense');
-
-          if (ExpenseTkrCli.args.length > 6) throw new Error('Please use a valid number of args');
           
-          argFlags[0] = ExpenseTkrCli.args[2];
+          argFlags.push(ExpenseTkrCli.args[2]);
 
-          if (argFlags[0] !== '--description' && argFlags[0] !== '--amount') throw new Error('Please use the "--description" or "--amount" option');
+          const isFlagsInvalid = (flags: string[], flagsLength: number): string => {
+            if (flags.length !== flagsLength) return 'Please use a valid number of flags';
 
-          if (ExpenseTkrCli.args.length > 4) {
+            for (let flag of flags) {
+              if (flag === '--description' || flag === '--amount') continue;
+              else return 'Please use the "--description" or "--amount" option';
+            }
 
+            if (flags.length > 1 && flags[0] === flags[1]) return 'The both flags are the same';
+
+            return '';
+          };
+
+          let flagError: string;
+
+          flagError = isFlagsInvalid(argFlags, 1);
+
+          if (flagError) throw new Error(flagError);
+
+          if ((ExpenseTkrCli.args.length === 4)) {
+            if (argFlags[0] === '--amount') {
+              amount = Number(ExpenseTkrCli.args[3]);
+
+              if (!amount) throw new Error('You have set an invalid amount to the selected expense');
+            } else if (argFlags[0] === '--description') description = ExpenseTkrCli.args[3];
           } else {
+            argFlags.push(ExpenseTkrCli.args[4]);
 
+            flagError = isFlagsInvalid(argFlags, 2);
+
+            if (flagError) throw new Error(flagError);
+
+            if (argFlags[0] === '--description') {
+              amount = Number(ExpenseTkrCli.args[5]);
+              description = ExpenseTkrCli.args[3];
+            } else if (argFlags[0] === '--amount') {
+              amount = Number(ExpenseTkrCli.args[3]);
+
+              if (!amount) throw new Error('You have set an invalid amount to the selected expense');
+
+              description = ExpenseTkrCli.args[5];
+            }
           }
 
+          if (!description && !amount) throw new Error('You have not set a description or an amount to the selected expense');
 
-
-          description = ExpenseTkrCli.args[3];
-
-          if (!description) throw new Error('You have not set a description to the selected expense');
-
-          await ExpenseTkrCli.toUpdateDescriptionExpense(id, description);
+          await ExpenseTkrCli.toUpdateDescriptionExpense(id, description, amount);
 
           break;
         case 'delete':
@@ -111,10 +143,13 @@ export default class ExpenseTkrCli {
 
           break;
       }
+
+      return 0;
     } catch (err) {
       console.error(err);
+      return 1;
     }
-  }
+  } 
 }
 
 // new ExpenseTkrCli();

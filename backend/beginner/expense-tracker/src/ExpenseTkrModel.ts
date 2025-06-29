@@ -96,8 +96,8 @@ export default class ExpenseTkrModel {
             const key = field as UpdatableExpenseFields,
                   value = fields[key];
 
-            if (key === 'description' && typeof value === 'string') expense.description = value;
-            else if (key === 'amount' && typeof value === 'number') expense.amount = value;
+            if (key === 'description' && typeof value === 'string' && value) expense.description = value;
+            else if (key === 'amount' && typeof value === 'number' && value) expense.amount = value;
           }
 
           expense.date = getCurrentDateFormat();
