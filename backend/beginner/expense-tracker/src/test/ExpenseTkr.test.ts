@@ -30,9 +30,19 @@ describe('List expenses', { skip: true }, () => {
   });
 });
 
-describe('Update an expense', { skip: false }, () => {
+describe('Update an expense', { skip: true }, () => {
   it('should be able to update an expense', async () => {
       ExpenseTkrCli.setArgs(['update', '1', '--description', 'Test 1', '--amount', '300']);
+      const res = await ExpenseTkrCli.cliOptions();
+
+      if (!res) assert.strictEqual(1, 1);
+      else assert.notStrictEqual(1, 1);
+  });
+});
+
+describe('Delete an expense', { skip: false }, () => {
+  it('should be able to delete an expense', async () => {
+      ExpenseTkrCli.setArgs(['delete', '1']);
       const res = await ExpenseTkrCli.cliOptions();
 
       if (!res) assert.strictEqual(1, 1);

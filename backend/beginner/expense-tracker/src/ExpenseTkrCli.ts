@@ -152,4 +152,4 @@ export default class ExpenseTkrCli {
   } 
 }
 
-// new ExpenseTkrCli();
+new ExpenseTkrCli();
