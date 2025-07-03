@@ -1,15 +1,20 @@
 {
   "name": "number-guessing-game",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/NumberGuessing.cli.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx tsx src/NumberGuessing.cli.ts",
+    "build": "npx tsc"
+  },
+  "bin": {
+    "numberguessing": "./dist/NumberGuessing.cli.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/node": "^24.0.10",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
