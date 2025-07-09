@@ -9,7 +9,7 @@ export default class ExpenseTkrModel {
   private static __dirname = dirname(ExpenseTkrModel.__filename); 
   public static dataPath: string = resolve(ExpenseTkrModel.__dirname, 'db', 'data.json');
 
-  static async listExpenses(month?: number): Promise<void> {
+  static async listExpenses(month?: number, category?: string): Promise<void> {
     try {
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
             convertData: Expense[] | null = data ? JSON.parse(data) : null;
@@ -20,24 +20,32 @@ export default class ExpenseTkrModel {
       }
 
       console.log(`-------------------------------------`);
-      console.log('# ID  Date       Description  Amount');
+      console.log('# ID  Date       Description  Category  Amount');
       console.log(`-------------------------------------`);
+
+      const expenseConsoleLog = (expense: Expense) => {
+        console.log(`# ${expense.id}   ${expense.date}  ${expense.description}     ${expense.category}      $${expense.amount}`);
+        console.log(`-------------------------------------`);
+      }
 
       let expenseMonth = 0;
 
-      if (!month) {
+      if (!month && !category) {
+        for (let expense of convertData) expenseConsoleLog(expense);
+      } else if (month && !category) {
         for (let expense of convertData) {
-          console.log(`# ${expense.id}   ${expense.date}  ${expense.description}        $${expense.amount}`);
-          console.log(`-------------------------------------`);
-        }
+          expenseMonth = Number(expense.date?.split('/')[1]);
+
+          if (expenseMonth === month) expenseConsoleLog(expense);
+        } 
+      } else if (!month && category) {
+        for (let expense of convertData)
+          if (expense.category === category) expenseConsoleLog(expense);
       } else {
         for (let expense of convertData) {
           expenseMonth = Number(expense.date?.split('/')[1]);
 
-          if (expenseMonth === month) {
-            console.log(`# ${expense.id}   ${expense.date}  ${expense.description}        $${expense.amount}`);
-            console.log(`-------------------------------------`);
-          }
+          if (expenseMonth === month && expense.category === category) expenseConsoleLog(expense);
         }
       }
     } catch (err) {
@@ -71,7 +79,7 @@ export default class ExpenseTkrModel {
     }
   }
 
-  static async updateExpense(id: number, fields: { description?: string, amount?: number }): Promise<void> {
+  static async updateExpense(id: number, fields: { description?: string, category?: string, amount?: number }): Promise<void> {
     if (!existsSync(ExpenseTkrModel.dataPath)) return;
 
     try {
@@ -97,6 +105,7 @@ export default class ExpenseTkrModel {
                   value = fields[key];
 
             if (key === 'description' && typeof value === 'string' && value) expense.description = value;
+            else if (key === 'category' && typeof value === 'string' && value) expense.category = value;
             else if (key === 'amount' && typeof value === 'number' && value) expense.amount = value;
           }
 

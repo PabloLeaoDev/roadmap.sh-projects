@@ -49,3 +49,5 @@ describe('Delete an expense', { skip: false }, () => {
       else assert.notStrictEqual(1, 1);
   });
 });
+
+// IMPLEMENTAR UMA CAMADA DE SREVICE, DESACOPLANDO AS REQUISIÇÕES DO CLI
