@@ -10,7 +10,6 @@ export default class ExpenseTkrModel {
   public static dataPath: string = resolve(ExpenseTkrModel.__dirname, 'db', 'data.json');
 
   static async listExpenses(month?: number, category?: string): Promise<void> {
-    try {
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
             convertData: Expense[] | null = data ? JSON.parse(data) : null;
 
@@ -48,14 +47,9 @@ export default class ExpenseTkrModel {
           if (expenseMonth === month && expense.category === category) expenseConsoleLog(expense);
         }
       }
-    } catch (err) {
-      (err as Error).message = 'Error listing expenses. No data found! Please create a expense first.';
-      console.error(err);
-    }
   }
 
-  static async addExpense(expense: Expense): Promise<void> {
-    try {
+  static async addExpense(expense: Expense): Promise<{ id: number, expense: Expense }> {
       if (!existsSync(ExpenseTkrModel.dataPath)) await createDataBase('[]', ExpenseTkrModel.dataPath);
 
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
@@ -73,83 +67,73 @@ export default class ExpenseTkrModel {
 
       if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
 
-      console.log(`Expense added successfully (ID: ${id})`);
-    } catch (err) {
-      console.error(err);
-    }
+      return { id, expense };
   }
 
-  static async updateExpense(id: number, fields: { description?: string, category?: string, amount?: number }): Promise<void> {
-    if (!existsSync(ExpenseTkrModel.dataPath)) return;
+  static async updateExpense(id: number, fields: { description?: string, category?: string, amount?: number }): Promise<{ expense: Expense }> {
+    if (!existsSync(ExpenseTkrModel.dataPath)) throw new Error('No database');
 
-    try {
-      const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
-            convertData = data ? JSON.parse(data) : null;
+    const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
+          convertData = data ? JSON.parse(data) : null;
 
-      if (!convertData) {
-        console.log('No data to be updated!');
-        return;
-      }
+    if (!convertData) throw new Error('No data to be updated');
 
-      let isExpenseExists = false;
-      for (let expense of convertData) {
-        if (expense.id === id) isExpenseExists = true;
-      }
+    let isExpenseExists = false;
+    for (let expense of convertData) {
+      if (expense.id === id) isExpenseExists = true;
+    }
 
-      if (!isExpenseExists) throw new Error('This task do not exists in database!');
+    if (!isExpenseExists) throw new Error('This task do not exists in database');
 
-      const newConvertData = (convertData as Expense[]).map((expense) => {
-        if (expense && expense.id === id) {
-          for (let field in fields) {
-            const key = field as UpdatableExpenseFields,
-                  value = fields[key];
+    let targetExpense: Expense = { id: 0, description: '', category: '', amount: 0, date: '' };
 
-            if (key === 'description' && typeof value === 'string' && value) expense.description = value;
-            else if (key === 'category' && typeof value === 'string' && value) expense.category = value;
-            else if (key === 'amount' && typeof value === 'number' && value) expense.amount = value;
-          }
+    const newConvertData = (convertData as Expense[]).map((expense) => {
+      if (expense && expense.id === id) {
+        for (let field in fields) {
+          const key = field as UpdatableExpenseFields,
+                value = fields[key];
 
-          expense.date = getCurrentDateFormat();
+          if (key === 'description' && typeof value === 'string' && value) expense.description = value;
+          else if (key === 'category' && typeof value === 'string' && value) expense.category = value;
+          else if (key === 'amount' && typeof value === 'number' && value) expense.amount = value;
         }
 
-        return expense;
-      });
+        expense.date = getCurrentDateFormat();
+        targetExpense = expense;
+      }
 
-      const reconvertData = JSON.stringify([...newConvertData]);
+      return expense;
+    });
 
-      await createDataBase(reconvertData, ExpenseTkrModel.dataPath);
-    } catch (err) {
-      console.error(err);
-    }
+    const reconvertData = JSON.stringify([...newConvertData]);
+
+    await createDataBase(reconvertData, ExpenseTkrModel.dataPath);
+
+    return { expense: targetExpense };
   }
 
   static async deleteExpense(id: number): Promise<void> {
     if (!existsSync(ExpenseTkrModel.dataPath)) return;
 
-    try {
-      const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
-            convertData = data ? JSON.parse(data) : null;
+    const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
+          convertData = data ? JSON.parse(data) : null;
 
-      if (!convertData) {
-        console.log('No data to be deleted!');
-        return;
-      }
-
-      (convertData as Expense[]).map((expense, i) => {
-        if (expense && expense.id === id) {
-          console.log(convertData.splice(i, 1));
-          
-          return null;
-        }
-        
-        return expense;
-      });
-
-      const reconvertData = JSON.stringify([...convertData]);
-
-      if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
-    } catch (err) {
-      console.error(err);
+    if (!convertData) {
+      console.log('No data to be deleted');
+      return;
     }
+
+    (convertData as Expense[]).map((expense, i) => {
+      if (expense && expense.id === id) {
+        console.log(convertData.splice(i, 1));
+        return null;
+      }
+      
+      return expense;
+    });
+
+    const reconvertData = JSON.stringify([...convertData]);
+
+    if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
   }
 }
