@@ -112,16 +112,15 @@ export default class ExpenseTkrModel {
     return { expense: targetExpense };
   }
 
-  static async deleteExpense(id: number): Promise<void> {
-    if (!existsSync(ExpenseTkrModel.dataPath)) return;
+  static async deleteExpense(id: number): Promise<{ expense: Expense }> {
+    if (!existsSync(ExpenseTkrModel.dataPath)) throw new Error('No database');;
 
     const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
           convertData = data ? JSON.parse(data) : null;
 
-    if (!convertData) {
-      console.log('No data to be deleted');
-      return;
-    }
+    if (!convertData) throw new Error('No No data to be deleted');;
+
+    let targetExpense: Expense = { id: 0, description: '', category: '', amount: 0, date: '' };
 
     (convertData as Expense[]).map((expense, i) => {
       if (expense && expense.id === id) {
@@ -129,11 +128,15 @@ export default class ExpenseTkrModel {
         return null;
       }
       
+      targetExpense = expense;
+
       return expense;
     });
 
     const reconvertData = JSON.stringify([...convertData]);
 
-    if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
+    if (reconvertData) await createDataBase(reconvertData, ExpenseTkrModel.dataPath);
+
+    return { expense: targetExpense };
   }
 }
