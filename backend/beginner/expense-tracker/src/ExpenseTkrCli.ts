@@ -42,7 +42,7 @@ export default class ExpenseTkrCli {
           res = await ExpenseTkrService.toListAllExpenses();
           break;
         case 'summary':
-          res = await ExpenseTkrService.toListExpenseByStatus(ExpenseTkrCli.args);
+          res = await ExpenseTkrService.toListExpenseWithFilter(ExpenseTkrCli.args);
           break;
       }
 

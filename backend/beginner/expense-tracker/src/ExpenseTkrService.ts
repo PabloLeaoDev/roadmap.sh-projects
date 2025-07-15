@@ -170,7 +170,7 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toListExpenseByStatus(args: string[]): Promise<ResponseCLI | void> {
+  static async toListExpenseWithFilter(args: string[]): Promise<ResponseCLI | void> {
     try {
       const summaryFlags = ['--month', '--category'];
   
