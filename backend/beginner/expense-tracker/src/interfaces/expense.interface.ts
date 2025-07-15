@@ -13,3 +13,4 @@ export interface ResponseCLI {
 } 
 
 export type UpdatableExpenseFields = 'description' | 'category' | 'amount';
+export type UpdatableFlags = '--description' | '--category' | '--amount';

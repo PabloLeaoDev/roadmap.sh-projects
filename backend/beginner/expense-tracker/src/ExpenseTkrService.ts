@@ -1,5 +1,5 @@
 import ExpenseTkrModel from "./ExpenseTkrModel";
-import { ResponseCLI } from "./interfaces/expense.interface";
+import { ResponseCLI, UpdatableFlags } from "./interfaces/expense.interface";
 
 export default class ExpenseTkrService {
   static async toAddExpense(args: string[]): Promise<ResponseCLI> {
@@ -18,7 +18,7 @@ export default class ExpenseTkrService {
     
       const { id, expense } = await ExpenseTkrModel.addExpense({ description, category, amount });
 
-      return { success: false, message: `Expense added successfully (ID: ${id})`, expense };
+      return { success: true, message: `Expense added successfully (ID: ${id})`, expense };
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }
@@ -27,21 +27,20 @@ export default class ExpenseTkrService {
   static async toUpdateDescriptionExpense(args: string[] ): Promise<ResponseCLI> {
     try {
       const id: number | undefined = Number((args[1]));
-      const argFlags: string[] = [];
-      let [ description, category, amount ] = ['', '', 0];
+      let flagError: string;
+      const argsFlags: string[] = [];
+      const argsDict = { '--description': '', '--category': '', '--amount': '' };
 
       if (args.length !== 4 && args.length !== 6 && args.length !== 8) throw new Error('Please use a valid number of args');
 
       if (!id) throw new Error('You have not set an ID to select the expense');
       
-      argFlags.push(args[2]);
-
-      const isFlagsInvalid = (flags: string[], flagsLength: number): string => {
-        if (flags.length !== flagsLength) return 'Please use a valid number of flags';
+      const isFlagsInvalid = (flags: string[]): string => {
+        if ((flags.length < 1) && (flags.length > 3)) return 'Please use a valid number of flags';
 
         for (let flag of flags) {
           if (flag === '--description' || flag === '--category' || flag === '--amount') continue;
-          else return 'Please use the "--description", "--category" or "--amount" option';
+          else return 'Please use the "--description", "--category" or "--amount" flag option';
         }
 
         if (flags.length > 1 && (
@@ -53,106 +52,24 @@ export default class ExpenseTkrService {
         return '';
       };
 
-      let flagError: string;
 
-      flagError = isFlagsInvalid(argFlags, 1);
+      let count = 0;
+      do {
+        count++;
+        if ((args[count]) && ((count % 2) === 0)) {
+          argsFlags.push(args[count]);
+          argsDict[args[count] as UpdatableFlags] = args[count + 1];
+        }
+      } while (args[count]);
+
+      flagError = isFlagsInvalid(argsFlags);
 
       if (flagError) throw new Error(flagError);
 
-      if ((args.length === 4)) {
-        if (argFlags[0] === '--amount') {
-          
-          amount = Number(args[3]);
-
-          if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-
-        } else if (argFlags[0] === '--description') {
-          description = args[3];
-        } else if (argFlags[0] === '--category') {
-          category = args[3];
-        }
-      } else if (args.length === 6) {
-        argFlags.push(args[4]);
-
-        flagError = isFlagsInvalid(argFlags, 2);
-
-        if (flagError) throw new Error(flagError);
-
-        if (argFlags[0] === '--description') {
-          description = args[3];
-          
-          if (argFlags[1] === '--category') 
-            category = args[5];
-          else {
-            amount = Number(args[5]);
-
-            if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-          }
-        } else if (argFlags[0] === '--category') {
-            category = args[3];
-
-          if (argFlags[1] === '--amount') {
-            amount = Number(args[3]);
-
-            if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-          } else description = args[5];
-        } else {
-          amount = Number(args[3]);
-
-          if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-
-          if (argFlags[1] === '--category') 
-            category = args[5];
-          else
-            description = args[5];
-        }
-      } else { // is length 8
-        argFlags.push(args[6]);
-
-        flagError = isFlagsInvalid(argFlags, 3);
-
-        if (flagError) throw new Error(flagError);
-
-        if (argFlags[0] === '--description') {
-          description = args[3];
-          
-          if (argFlags[1] === '--category') {
-            category = args[5];
-            amount = Number(args[7]);
-          } else {
-            amount = Number(args[5]);
-            category = args[7];
-          }
-
-          if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-        } else if (argFlags[0] === '--category') {
-          category = args[3];
-
-          if (argFlags[1] === '--amount') {
-            amount = Number(args[3]);
-            description = args[7];
-          } else {
-            description = args[5];
-            amount = Number(args[7]);
-          }
-
-          if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-        } else {
-          amount = Number(args[3]);
-
-          if (!amount) throw new Error('You have set an invalid amount to the selected expense');
-
-          if (argFlags[1] === '--category') {
-            category = args[5];
-            description = args[7];
-          } else {
-            description = args[5];
-            category = args[7];
-          }
-        }
-      }
-
+      let [ description, category, amount ] = [ argsDict['--description'], argsDict['--category'], Number(argsDict['--amount']) ];
+      
       if (!description && !category && !amount) throw new Error('You have not set a description, a category or an amount to the selected expense');
+      if(!amount) throw new Error('You have set an invalid amount to the selected expense');
 
       const { expense } = await ExpenseTkrModel.updateExpense(id, { description, category, amount });
 
@@ -172,22 +89,34 @@ export default class ExpenseTkrService {
 
   static async toListExpenseWithFilter(args: string[]): Promise<ResponseCLI | void> {
     try {
+      if ((args.length !== 3) && (args.length !== 5)) throw new Error('Please use a valid number of args');
+
       const summaryFlags = ['--month', '--category'];
   
-      if (!summaryFlags.includes(args[1]) || !summaryFlags.includes(args[3])) throw new Error('This option does not exists');
+      if ((!summaryFlags.includes(args[1])) && (!summaryFlags.includes(args[3]))) throw new Error('This option does not exists');
       if (args[3] && (args[1] === args[3])) throw new Error('You cannot use the same option twice');
   
-      const month = Number(args[2]);
+      let month: number = 0;
+
+      if (args.includes('--month')) {
+        month = Number(args[2]);
+
+        if (!month) month = Number(args[4]);
+        if (!month) throw new Error('You have not set a month to the summary');
+      }
+
+      let category: string = '';
+
+      if (args.includes('--category')) {
+        category = args[2];
+
+        if (!category) category = args[4];
+        if (!category) throw new Error('You have not set a month to the summary');
+      }
   
-      if (!month) throw new Error('You have not set a month to the summary');
+      else if (month && (month < 1 || month > 12)) throw new Error('The month must be between 1 and 12');
   
-      const category = args[4];
-  
-      if (!category) throw new Error('You have not set a category to the summary');
-  
-      else if (month < 1 || month > 12) throw new Error('The month must be between 1 and 12');
-  
-      await ExpenseTkrModel.listExpenses(month);
+      await ExpenseTkrModel.listExpenses(month, category);
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }

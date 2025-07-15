@@ -23,9 +23,7 @@ export default class ExpenseTkrCli {
   }
 
   static async cliOptions(): Promise<ResponseCLI | void> {
-      if (!['add', 'update', 'delete', 'list', 'summary'].includes(ExpenseTkrCli.args[0]))
-        throw new Error('This option does not exists');
-
+    try {
       let res: ResponseCLI | void = undefined;
 
       switch (ExpenseTkrCli.args[0]) {
@@ -44,12 +42,17 @@ export default class ExpenseTkrCli {
         case 'summary':
           res = await ExpenseTkrService.toListExpenseWithFilter(ExpenseTkrCli.args);
           break;
+        default:
+          throw new Error('This option does not exists');
       }
 
       if (res) {
         console.log(res);
         return res;
       }
+    } catch (error) {
+      console.log({ success: false, message: (error as Error).message });
+    }
   } 
 }
 
