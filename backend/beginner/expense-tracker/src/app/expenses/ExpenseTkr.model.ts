@@ -65,7 +65,7 @@ export default class ExpenseTkrModel {
       const concatData = [...convertData, expense], 
             reconvertData = JSON.stringify(concatData);
 
-      if (reconvertData) createDataBase(reconvertData, ExpenseTkrModel.dataPath);
+      if (reconvertData) await createDataBase(reconvertData, ExpenseTkrModel.dataPath);
 
       return { id, expense };
   }
@@ -79,11 +79,11 @@ export default class ExpenseTkrModel {
     if (!convertData) throw new Error('No data to be updated');
 
     let isExpenseExists = false;
-    for (let expense of convertData) {
+    for (let expense of convertData as Expense[]) {
       if (expense.id === id) isExpenseExists = true;
     }
 
-    if (!isExpenseExists) throw new Error('This task do not exists in database');
+    if (!isExpenseExists) throw new Error('This expense do not exists in database');
 
     let targetExpense: Expense = { id: 0, description: '', category: '', amount: 0, date: '' };
 
@@ -118,7 +118,7 @@ export default class ExpenseTkrModel {
     const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8');
     let convertData = data ? JSON.parse(data) : null;
 
-    if (!convertData) throw new Error('No No data to be deleted');
+    if (!convertData) throw new Error('No data to be deleted');
 
     let targetExpense: Expense = { id: 0, description: '', category: '', amount: 0, date: '' };
 
