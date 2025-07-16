@@ -122,14 +122,13 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toDeleteExpense(args: string[]): Promise<ResponseCLI | void> {
+  static async toDeleteExpenses(args: string[]): Promise<ResponseCLI | void> {
     try {
       const id: number | undefined = Number((args[1]));
 
-      if (args.length !== 2) throw new Error('You must set 2 arguments to delete option');
-      if (!id) throw new Error('You have not set an ID to delete a expense');
+      if (args.length < 1 && args.length > 2) throw new Error('You must set at most one argument to delete option');
 
-      await ExpenseTkrModel.deleteExpense(id);
+      await ExpenseTkrModel.deleteExpenses(id);
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }

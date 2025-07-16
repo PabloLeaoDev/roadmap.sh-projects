@@ -34,7 +34,7 @@ export default class ExpenseTkrCli {
           res = await ExpenseTkrService.toUpdateDescriptionExpense(ExpenseTkrCli.args);
           break;
         case 'delete':
-          res = await ExpenseTkrService.toDeleteExpense(ExpenseTkrCli.args);
+          res = await ExpenseTkrService.toDeleteExpenses(ExpenseTkrCli.args);
           break;
         case 'list':
           res = await ExpenseTkrService.toListAllExpenses();
