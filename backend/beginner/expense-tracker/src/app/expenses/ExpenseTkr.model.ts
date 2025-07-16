@@ -1,13 +1,13 @@
-import { Expense, UpdatableExpenseFields } from './interfaces/expense.interface';
+import { Expense, UpdatableExpenseFields } from '../../interfaces/expense.interface';
 import { promises as fs, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { createDataBase, getCurrentDateFormat } from './utils/main.util';
+import { createDataBase, getCurrentDateFormat } from '../utils/main.util';
 
 export default class ExpenseTkrModel {
   private static __filename = fileURLToPath(import.meta.url);
   private static __dirname = dirname(ExpenseTkrModel.__filename); 
-  public static dataPath: string = resolve(ExpenseTkrModel.__dirname, 'db', 'data.json');
+  public static dataPath: string = resolve(ExpenseTkrModel.__dirname, '..', '..', '..', 'db', 'expenses.json');
 
   static async listExpenses(month?: number, category?: string): Promise<void> {
       const data = await fs.readFile(ExpenseTkrModel.dataPath, 'utf-8'),
@@ -134,7 +134,6 @@ export default class ExpenseTkrModel {
         return expense;
       });
     } else convertData = [];
-
 
     const reconvertData = JSON.stringify([...convertData]);
 

@@ -1,8 +1,9 @@
-import ExpenseTkrModel from "./ExpenseTkrModel";
-import { ResponseCLI, UpdatableFlags } from "./interfaces/expense.interface";
+import ExpenseTkrModel from './ExpenseTkr.model';
+import { ResponseCli } from '../../interfaces/generic.interface';
+import { UpdatableFlags } from '../../interfaces/expense.interface';
 
 export default class ExpenseTkrService {
-  static async toAddExpense(args: string[]): Promise<ResponseCLI> {
+  static async toAddExpense(args: string[]): Promise<ResponseCli> {
     try {
       if (args[1] !== '--description') throw new Error('Please use the "--description" option');
       if (args[3] !== '--category') throw new Error('Please use the "--category" option');
@@ -24,7 +25,7 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toUpdateDescriptionExpense(args: string[] ): Promise<ResponseCLI> {
+  static async toUpdateExpense(args: string[]): Promise<ResponseCli> {
     try {
       const id: number | undefined = Number((args[1]));
       let flagError: string;
@@ -52,7 +53,6 @@ export default class ExpenseTkrService {
         return '';
       };
 
-
       let count = 0;
       do {
         count++;
@@ -79,7 +79,7 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toListAllExpenses(): Promise<ResponseCLI | void> {
+  static async toListAllExpenses(): Promise<ResponseCli | void> {
     try {
       await ExpenseTkrModel.listExpenses();
     } catch (error) {
@@ -87,7 +87,7 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toListExpenseWithFilter(args: string[]): Promise<ResponseCLI | void> {
+  static async toListExpenseWithFilter(args: string[]): Promise<ResponseCli | void> {
     try {
       if ((args.length !== 3) && (args.length !== 5)) throw new Error('Please use a valid number of args');
 
@@ -122,7 +122,7 @@ export default class ExpenseTkrService {
     }
   }
 
-  static async toDeleteExpenses(args: string[]): Promise<ResponseCLI | void> {
+  static async toDeleteExpenses(args: string[]): Promise<ResponseCli | void> {
     try {
       const id: number | undefined = Number((args[1]));
 
@@ -132,5 +132,5 @@ export default class ExpenseTkrService {
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }
-  } 
+  }
 }
