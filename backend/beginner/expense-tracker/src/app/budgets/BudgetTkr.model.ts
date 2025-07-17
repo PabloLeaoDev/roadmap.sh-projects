@@ -58,11 +58,11 @@ export default class BudgetTkrModel {
     }
 
     console.log(`-------------------------------------`);
-    console.log('# ID  Date');
+    console.log('# Budget  Month');
     console.log(`-------------------------------------`);
 
     const budgetConsoleLog = (budget: Budget) => {
-      console.log(`# ${budget.budget}   ${budget.month}`);
+      console.log(`# ${budget.budget}    ${budget.month}`);
       console.log(`-------------------------------------`);
     }
 

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx tsx src/ExpenseTkrCli.ts",
     "build": "npx tsc",
-    "test": "npx tsx --test src/test/ExpenseTkr.test.ts"
+    "test:expenses": "npx tsx --test src/test/ExpensesTkr.test.ts",
+    "test:budgets": "npx tsx --test src/test/BudgetsTkr.test.ts"
   },
   "bin": {
     "expensetkr": "./dist/ExpenseTkrCli.js"
