@@ -1,4 +1,10 @@
-import fs from 'fs';
+import { promises as fs, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const __exportPath: string = resolve(__dirname, '..', '..', '..', '..', 'exports');
 
 function removeCommas(data: string[] | string[][]): string[] | string[][] {
   for (let index in data) {
@@ -30,11 +36,10 @@ function csvStringfy(csvBody: string[][], csvHeaders?: string[]): string {
   return result;
 }
 
-export default async function exportCsvFile(path: string, csvBody: string[][], csvHeaders?: string[]) {
+export default async function exportCsvFile(fileName: string, csvBody: string[][], csvHeaders?: string[]) {
+  if (!existsSync(__exportPath)) await fs.mkdir(__exportPath);
   const output = csvStringfy(csvBody, csvHeaders);
 
-  fs.writeFile(path, output, (err) => {
-    if (err) throw err;
-    console.log('CSV file created successfully!');
-  });
+  await fs.writeFile(resolve(__exportPath, `${fileName}.csv`), output);
+  console.log('CSV file created successfully!');
 }

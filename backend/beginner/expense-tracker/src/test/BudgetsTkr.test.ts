@@ -1,6 +1,6 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
-import BudgetTkrService from "../app/budgets/BudgetTkr.service";
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import * as BudgetTkrService from '../app/budgets/BudgetTkr.service';
 
 describe('Add budgets', { skip: true }, () => {
   it('should be able to create a budget', { skip: false }, async () => {
