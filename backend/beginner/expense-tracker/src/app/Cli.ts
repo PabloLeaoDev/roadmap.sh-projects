@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import ExpenseTkrService from './expenses/ExpenseTkr.service';
+import * as ExpenseTkrService from './expenses/ExpenseTkr.service';
+import * as BudgetTkrService from './budgets/BudgetTkr.service';
+import * as FileProcTkrService from './fileproc/FileProcTkr.service';
 import { ResponseCli } from '../interfaces/generic.interface';
 
 export default class Cli {
@@ -24,26 +26,32 @@ export default class Cli {
 
   static async cliOptions(): Promise<ResponseCli | void> {
     try {
+      const isBudget = (Cli.args[1] === 'budget');
       let res: ResponseCli | void = undefined;
 
       switch (Cli.args[0]) {
         case 'add':
-          if (Cli.args[1] === 'budget') 
-            res = await ExpenseTkrService.toAddMonthBudget(Cli.args);
-          else
-            res = await ExpenseTkrService.toAddExpense(Cli.args);
+          res = isBudget ? 
+            await BudgetTkrService.toAddMonthBudget(Cli.args) : await ExpenseTkrService.toAddExpense(Cli.args);
           break;
         case 'update':
-          res = await ExpenseTkrService.toUpdateExpense(Cli.args);
+          res = isBudget ? 
+            await BudgetTkrService.toAddMonthBudget(Cli.args) : await ExpenseTkrService.toUpdateExpense(Cli.args);
           break;
         case 'delete':
-          res = await ExpenseTkrService.toDeleteExpenses(Cli.args);
+          res = isBudget ? 
+            await BudgetTkrService.toAddMonthBudget(Cli.args) : await ExpenseTkrService.toDeleteExpenses(Cli.args);
           break;
         case 'list':
-          res = await ExpenseTkrService.toListAllExpenses();
+          res = isBudget ? 
+            await BudgetTkrService.toAddMonthBudget(Cli.args) : await ExpenseTkrService.toListAllExpenses();
           break;
         case 'summary':
-          res = await ExpenseTkrService.toListExpenseWithFilter(Cli.args);
+          res = isBudget ? 
+            await BudgetTkrService.toAddMonthBudget(Cli.args) : await ExpenseTkrService.toListExpenseWithFilter(Cli.args);
+          break;
+        case 'export':
+          res = await FileProcTkrService.toCreateCsvFile(Cli.args);
           break;
         default:
           throw new Error('This option does not exists');
