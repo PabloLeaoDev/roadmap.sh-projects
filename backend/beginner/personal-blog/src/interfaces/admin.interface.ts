@@ -1,4 +1,4 @@
-export default interface Admin {
+export default interface IAdmin {
   user: string,
   password: string
 }

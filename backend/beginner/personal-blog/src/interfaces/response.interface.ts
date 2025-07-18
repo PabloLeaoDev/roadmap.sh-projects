@@ -1,7 +1,5 @@
-import Article from "./article.interface"
-
-export default interface ResponseBlog {
+export default interface IResponse<T> {
   success: boolean,
   message: string,
-  payload?: Article | Article[]
+  payload?: T | T[]
 }
