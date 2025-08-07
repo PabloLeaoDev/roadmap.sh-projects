@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import IArticle from '../../interfaces/article.interface';
+import IArticle from '../interfaces/article.interface';
 
 
 export async function getArticles(): Promise<IArticle[]> {

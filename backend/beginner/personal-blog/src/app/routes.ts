@@ -9,10 +9,9 @@ router.get('home', guessController.renderHome);
 router.get('article/:id', guessController.renderArticle);
 
 // Adm
-router.get('login/adm', admController.renderLogin);
-router.get('/admin', admController.renderAdmPainel);
-
-router.post('login/adm', admController.verifyAdm);
+router.get('login/admin', admController.renderLogin);
+router.get('/edit/:id', admController.renderEditArticlePainel);
+router.post('/admin', admController.renderAdmPainel);
 router.post('/edit/:id', admController.editArticle);
 router.post('/new', admController.createArticle);
 

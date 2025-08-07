@@ -1,31 +1,36 @@
 import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service';
-import * as guessView from '../views/guess.view';
-import IResponse from '../../interfaces/response.interface';
-import IArticle from '../../interfaces/article.interface';
+import IResponse from '../interfaces/response.interface';
+import IArticle from '../interfaces/article.interface';
 
-export async function renderHome(req: Request, res: Response): Promise<IResponse<IArticle>> {
+export async function renderHome(req: Request, res: Response) {
   try {
-    const articles = await guessService.getArticles();
-    res.send(guessView.renderHome(articles));
+    const { articles, error } = await guessService.getArticles();
 
-    return {
+    if (error) throw new Error();
+
+    res.render('index', { articles });
+
+    return res.status(200).send({
       success: true,
       message: 'Articles load successfully',
       payload: articles
-    }
+    }) 
   } catch (error) {
-    return {
+    return res.status(404).send({
       success: false,
       message: (error as Error).message
-    }
+    })
   }
 }
 
-export async function renderArticle(req: Request, res: Response): Promise<IResponse<IArticle>> {
+export async function renderArticle(req: Request, res: Response) {
   try {
-    const article = await guessService.getArticle(req.params.id);
-    res.send(guessView.renderArticle(article));
+    const { article, error } = await guessService.getArticle(Number(req.params.id));
+
+    if (error) throw new Error();
+
+    res.render('article', { article });
 
     return {
       success: true,
