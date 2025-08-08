@@ -1,46 +1,44 @@
 import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service';
-import IResponse from '../interfaces/response.interface';
-import IArticle from '../interfaces/article.interface';
 
 export async function renderHome(req: Request, res: Response) {
   try {
-    const { articles, error } = await guessService.getArticles();
+    const { error, payload } = await guessService.getArticles();
 
     if (error) throw new Error();
 
-    res.render('index', { articles });
+    res.render('index', { articles: payload });
 
     return res.status(200).send({
       success: true,
-      message: 'Articles load successfully',
-      payload: articles
-    }) 
+      message: 'Articles were successfully rendered',
+      payload
+    });
   } catch (error) {
     return res.status(404).send({
       success: false,
       message: (error as Error).message
-    })
+    });
   }
 }
 
 export async function renderArticle(req: Request, res: Response) {
   try {
-    const { article, error } = await guessService.getArticle(Number(req.params.id));
+    const { error, payload } = await guessService.getArticle(Number(req.params.id));
 
     if (error) throw new Error();
 
-    res.render('article', { article });
+    res.render('article', { articles: payload });
 
-    return {
+    return res.status(200).send({
       success: true,
-      message: 'Articles load successfully',
-      payload: article
-    }
+      message: 'Article was successfully rendered',
+      payload
+    });
   } catch (error) {
-    return {
+    return res.status(404).send({
       success: false,
       message: (error as Error).message
-    }
+    });
   }
 }

@@ -1,54 +1,40 @@
 import { Request, Response } from 'express';
 import * as admService from '../services/adm.service';
-import IResponse from '../interfaces/response.interface';
-import IArticle from '../interfaces/article.interface';
 
 export function renderLogin(req: Request, res: Response) {
-  try {
-    res.render('login');
+  res.render('login');
 
-    return res.status(200).send({
-      success: true,
-      message: 'Admin login screen was rendered'
-    });
-  } catch (error) {
-    return res.status(404).send({
-      success: false,
-      message: (error as Error).message
-    });
-  }
+  return res.status(200).send({
+    success: true,
+    message: 'Admin login screen was rendered'
+  });
 }
 
 export function renderEditArticlePainel(req: Request, res: Response) {
-  try {
-    return res.status(200).send({
-      success: true,
-      message: 'Admin login screen was rendered'
-    });
-  } catch (error) {
-    return res.status(404).send({
-      success: false,
-      message: (error as Error).message
-    });
-  }
+  res.render('edit-article', { id: req.params.id });
+  
+  return res.status(200).send({
+    success: true,
+    message: 'Admin login screen was rendered'
+  });
 }
 
 export async function renderAdmPainel(req: Request, res: Response) {
   try {
-    const { isVerified } = await admService.verifyAdmData(req.body);
+    const isVerified = await admService.verifyAdmData(req.body);
 
-    if (!isVerified) throw new Error('Data isn\'t verified');
+    if (!isVerified) throw new Error('Data admin isn\'t verified');
 
-    const { articles, error } = await admService.getArticles();
+    const { error, payload } = await admService.getArticles();
 
     if (error) throw new Error();
 
-    res.render('adm-painel', { articles });
+    res.render('adm-painel', { articles: payload });
 
     return res.status(200).send({
       success: true,
       message: 'Admin painel was rendered',
-      payload: articles
+      payload
     });
   } catch (error) {
     return res.status(404).send({
@@ -60,14 +46,14 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
 export async function editArticle(req: Request, res: Response) {
   try {
-    const { article, error } = await admService.updateArticleData(req.params.id);
+    const { error, payload } = await admService.updateArticleData(req.body);
 
     if (error) throw new Error();
 
     return res.status(200).send({
       success: true,
       message: 'Article edited successfully',
-      payload: article
+      payload
     });
   } catch (error) {
     return res.status(404).send({
@@ -79,14 +65,14 @@ export async function editArticle(req: Request, res: Response) {
 
 export async function createArticle(req: Request, res: Response) {
   try {
-    const { article, error } = await admService.createArticle();
+    const { error, payload } = await admService.createArticle(req.body);
 
     if (error) throw new Error();
 
     return res.status(200).send({
       success: true,
       message: 'Article created successfully',
-      payload: article
+      payload
     });
   } catch (error) {
     return res.status(404).send({

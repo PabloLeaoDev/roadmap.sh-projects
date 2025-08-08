@@ -3,3 +3,8 @@ export default interface IResponse<T = {}> {
   message: string,
   payload?: T | T[]
 }
+
+export interface IError<T = null> {
+  error: string | null,
+  payload?: T | T[]
+}
