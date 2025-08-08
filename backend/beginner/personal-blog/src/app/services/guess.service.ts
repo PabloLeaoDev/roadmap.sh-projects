@@ -1,9 +1,13 @@
 import * as guessModel from '../models/guess.model';
 
 export async function getArticles() {
-  return await guessModel.getArticles();
+  const { articles, error } = await guessModel.getArticles();
+
+  return { articles, error };
 }
 
 export async function getArticle(id: number) {
-  return await guessModel.getArticle();
+  const { article, error } = await guessModel.getArticle(id);
+
+  return { article, error };
 }
