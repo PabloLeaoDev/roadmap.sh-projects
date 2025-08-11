@@ -3,3 +3,5 @@ export default interface IAdmin {
   email?: string,
   password: string
 }
+
+export type TAdminKeys = 'user' | 'email' | 'password';
