@@ -1,6 +1,12 @@
 export default interface IArticle {
-  id?: number
+  id: number,
   title: string,
   body: string,
-  date?: Date
+  created_at: Date | string,
+  updated_at: Date | string | null
+}
+
+export interface IUpgradeableArticleFields {
+  title: string,
+  body: string
 }

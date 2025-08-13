@@ -3,7 +3,8 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import IAdmin, { TAdminKeys } from "../utils/interfaces/admin.interface";
 import { IError } from '../utils/interfaces/response.interface';
-import IArticle from '../utils/interfaces/article.interface';
+import IArticle, { IUpgradeableArticleFields } from '../utils/interfaces/article.interface';
+import { createDataBase, getCurrentDateFormat } from '../utils/main.util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,31 +25,84 @@ export async function compareWithVerifiedAdm(admData: IAdmin): Promise<{ error: 
     return {
       error: false,
       message: ''
-    }
+    };
   } catch (error) {
     return {
       error: true,
       message: (error as Error).message
-    }
+    };
   }
 }
 
 export async function getArticles(id?: number): Promise<IError<IArticle>> {
   try {
-    const isWindows = process.platform === 'win32', 
-          separator = isWindows ? '\\' : '/',
-          cleanPath = path.split(separator);
+    let articles: IArticle[];
 
-    if (cleanPath[cleanPath.length - 1].includes('.')) cleanPath.pop(); // remove file
+    if (!existsSync(dbPathArticles)) {
+      await createDataBase('[]', dbPathArticles);
 
-    if (!existsSync(cleanPath.join(separator))) 
-      await fs.mkdir(cleanPath.join(separator), { recursive: true });
+      throw new Error('No articles in database');
+    }
 
-    await createDataBase('[]', dbPathArticles);
+    articles = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+
+    if (articles.length === 0) throw new Error('No articles in database');
+
+    if (!id) return { error: '', payload: articles };
+
+    return {
+      error: '',
+      payload: articles.filter((article) => article.id === id)
+    };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function updateArticleData(id: number, fields: IUpgradeableArticleFields): Promise<IError<IArticle | null>> {
+  try {
+    if (!id) throw new Error('ID article must be submitted');
+    if ((!fields.title) && (!fields.body)) throw new Error('At least one article upgradeable field must be submitted');
+
+    const articles: IArticle[] = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+    let article: IArticle | null = null;
+
+    for (let atc of articles) {
+      if (atc.id === id) {
+        if (fields.title) atc.title = fields.title;
+        if (fields.body) atc.body = fields.body;
+
+        atc.updated_at = getCurrentDateFormat();
+      }
+    }
+
+    await createDataBase(JSON.stringify(articles), dbPathArticles);
+
+    return {
+      error: '',
+      payload: article
+    };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function createArticle(fields: { title: string, body: string }) {
+  try {
+    if ((!fields.title) || (!fields.body)) throw new Error('Both fields of the article must be submitted');
+
+    if (!existsSync(dbPathArticles))
+      await createDataBase('[]', dbPathArticles);
+
+    const articles: IArticle[] = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+    const id = (() => {
+      if (!articles.length) return 1;
+        
+      return articles[articles.length - 1].id + 1;
+    })();
+
+    articles.push({ id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null })
   } catch (error) {
     
   }
 }
-
-export async function updateArticleData() {}
-export async function createArticle() {}
