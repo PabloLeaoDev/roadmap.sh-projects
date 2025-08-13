@@ -24,7 +24,7 @@ export async function renderHome(req: Request, res: Response) {
 
 export async function renderArticle(req: Request, res: Response) {
   try {
-    const { error, payload } = await guessService.getArticle(Number(req.params.id));
+    const { error, payload } = await guessService.getArticles(Number(req.params.id));
 
     if (error) throw new Error();
 

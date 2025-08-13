@@ -1,12 +1,30 @@
-import { promises as fs } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 import { IError } from '../utils/interfaces/response.interface';
+import IArticle from '../utils/interfaces/article.interface';
+import { dbPathArticles } from './adm.model';
+import { createDataBase } from '../utils/main.util';
 
-export async function getArticles(): Promise<IError> {
-  const data = await fs.readFile('articles.json', 'utf-8');
-  return { articles: JSON.parse(data), error: null };
-}
+export async function getArticles(id?: number): Promise<IError<IArticle>> {
+  try {
+    let articles: IArticle[];
 
-export async function getArticle(id: number): Promise<IError> {
-  const data = await fs.readFile('articles.json', 'utf-8');
-  return { articles: JSON.parse(data), error: null };
+    if (!existsSync(dbPathArticles)) {
+      await createDataBase('[]', dbPathArticles);
+
+      throw new Error('No articles in database');
+    }
+
+    articles = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+
+    if (articles.length === 0) throw new Error('No articles in database');
+
+    if (!id) return { error: '', payload: articles };
+
+    return {
+      error: '',
+      payload: articles.filter((article) => article.id === id)
+    };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
 }

@@ -6,5 +6,5 @@ export default interface IResponse<T = {}> {
 
 export interface IError<T = null> {
   error: string | null,
-  payload?: T | T[]
+  payload?: T | T[] | null
 }

@@ -9,7 +9,7 @@ import { createDataBase, getCurrentDateFormat } from '../utils/main.util';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const dbPathAdmin = resolve(__dirname, '..', '..', '..', 'db', 'admin.json');
-const dbPathArticles = resolve(__dirname, '..', '..', '..', 'db', 'articles.json');
+export const dbPathArticles = resolve(__dirname, '..', '..', '..', 'db', 'articles.json');
 
 export async function compareWithVerifiedAdm(admData: IAdmin): Promise<{ error: boolean, message: string }> {
   try {
@@ -34,32 +34,7 @@ export async function compareWithVerifiedAdm(admData: IAdmin): Promise<{ error: 
   }
 }
 
-export async function getArticles(id?: number): Promise<IError<IArticle>> {
-  try {
-    let articles: IArticle[];
-
-    if (!existsSync(dbPathArticles)) {
-      await createDataBase('[]', dbPathArticles);
-
-      throw new Error('No articles in database');
-    }
-
-    articles = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
-
-    if (articles.length === 0) throw new Error('No articles in database');
-
-    if (!id) return { error: '', payload: articles };
-
-    return {
-      error: '',
-      payload: articles.filter((article) => article.id === id)
-    };
-  } catch (error) {
-    return { error: (error as Error).message };
-  }
-}
-
-export async function updateArticleData(id: number, fields: IUpgradeableArticleFields): Promise<IError<IArticle | null>> {
+export async function updateArticleData(id: number, fields: IUpgradeableArticleFields): Promise<IError<IArticle>> {
   try {
     if (!id) throw new Error('ID article must be submitted');
     if ((!fields.title) && (!fields.body)) throw new Error('At least one article upgradeable field must be submitted');
@@ -87,7 +62,7 @@ export async function updateArticleData(id: number, fields: IUpgradeableArticleF
   }
 }
 
-export async function createArticle(fields: { title: string, body: string }) {
+export async function createArticle(fields: { title: string, body: string }): Promise<IError<IArticle>> {
   try {
     if ((!fields.title) || (!fields.body)) throw new Error('Both fields of the article must be submitted');
 
@@ -101,8 +76,15 @@ export async function createArticle(fields: { title: string, body: string }) {
       return articles[articles.length - 1].id + 1;
     })();
 
-    articles.push({ id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null })
+    const newArticle = { id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null };
+
+    articles.push(newArticle);
+
+    return {
+      error: '',
+      payload: newArticle
+    }
   } catch (error) {
-    
+    return { error: (error as Error).message };
   }
 }
