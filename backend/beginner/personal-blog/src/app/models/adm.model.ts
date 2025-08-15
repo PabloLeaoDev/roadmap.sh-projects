@@ -66,8 +66,10 @@ export async function createArticle(fields: { title: string, body: string }): Pr
   try {
     if ((!fields.title) || (!fields.body)) throw new Error('Both fields of the article must be submitted');
 
-    if (!existsSync(dbPathArticles))
+    if (!existsSync(dbPathArticles)) {
+      console.log(' asdlmaslmsd');
       await createDataBase('[]', dbPathArticles);
+    }
 
     const articles: IArticle[] = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
     const id = (() => {
@@ -76,9 +78,16 @@ export async function createArticle(fields: { title: string, body: string }): Pr
       return articles[articles.length - 1].id + 1;
     })();
 
+    console.log(id);
+
     const newArticle = { id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null };
 
+    console.log(newArticle);
+    console.log(articles);
     articles.push(newArticle);
+
+
+    await createDataBase(JSON.stringify(articles), dbPathArticles);
 
     return {
       error: '',

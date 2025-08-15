@@ -3,7 +3,7 @@ import cors from 'cors';
 import Routes from './routes'
 import { Request, Response, NextFunction } from 'express';
 
-export const app = express();
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,4 +18,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.set('view engine', 'ejs');
 
 // app.set('views', './views');
-app.use('/', Routes);
+app.use(Routes);
+
+export default app;

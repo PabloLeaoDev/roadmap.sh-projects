@@ -6,8 +6,10 @@ export default async function createDataBase(fileContent = '[]', dataPath: strin
     await createPath(dataPath);
     await fs.writeFile(dataPath, fileContent);
   } catch (err) {
+    console.log((err as Error).message);
     console.log('Creating database...');
 
+    console.log(dataPath);
     await createPath(dataPath);
     await createDataBase(fileContent, dataPath);
   } finally {
