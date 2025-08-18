@@ -46,7 +46,7 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
 export async function editArticle(req: Request, res: Response) {
   try {
-    const { error, payload } = await admService.updateArticleData(req.body);
+    const { error, payload } = await admService.updateArticleData(Number(req.params.id), req.body);
 
     if (error) throw new Error();
 
@@ -66,6 +66,25 @@ export async function editArticle(req: Request, res: Response) {
 export async function createArticle(req: Request, res: Response) {
   try {
     const { error, payload } = await admService.createArticle(req.body);
+
+    if (error) throw new Error();
+
+    return res.status(200).send({
+      success: true,
+      message: 'Article created successfully',
+      payload
+    });
+  } catch (error) {
+    return res.status(404).send({
+      success: false,
+      message: (error as Error).message
+    });
+  }
+}
+
+export async function deleteArticle(req: Request, res: Response) {
+  try {
+    const { error, payload } = await admService.deleteArticle(Number(req.params.id));
 
     if (error) throw new Error();
 

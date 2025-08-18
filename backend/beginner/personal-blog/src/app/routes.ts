@@ -14,5 +14,6 @@ router.get('/edit/:id', admController.renderEditArticlePainel);
 router.post('/admin', admController.renderAdmPainel);
 router.post('/edit/:id', admController.editArticle);
 router.post('/new', admController.createArticle);
+router.post('/delete/:id', admController.deleteArticle);
 
 export default router;

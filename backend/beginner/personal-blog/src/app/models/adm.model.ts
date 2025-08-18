@@ -3,7 +3,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import IAdmin, { TAdminKeys } from "../utils/interfaces/admin.interface";
 import { IError } from '../utils/interfaces/response.interface';
-import IArticle, { IUpgradeableArticleFields } from '../utils/interfaces/article.interface';
+import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface';
 import { createDataBase, getCurrentDateFormat } from '../utils/main.util';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,12 +34,12 @@ export async function compareWithVerifiedAdm(admData: IAdmin): Promise<{ error: 
   }
 }
 
-export async function updateArticleData(id: number, fields: IUpgradeableArticleFields): Promise<IError<IArticle>> {
+export async function updateArticleData(id: number, fields: IFlexibleArticleFields): Promise<IError<IArticle>> {
   try {
     if (!id) throw new Error('ID article must be submitted');
     if ((!fields.title) && (!fields.body)) throw new Error('At least one article upgradeable field must be submitted');
 
-    const articles: IArticle[] = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+    const articles: IArticle[] = JSON.parse(await fs.readFile(dbPathArticles, 'utf-8'));
     let article: IArticle | null = null;
 
     for (let atc of articles) {
@@ -62,30 +62,23 @@ export async function updateArticleData(id: number, fields: IUpgradeableArticleF
   }
 }
 
-export async function createArticle(fields: { title: string, body: string }): Promise<IError<IArticle>> {
+export async function createArticle(fields: IFlexibleArticleFields): Promise<IError<IArticle>> {
   try {
     if ((!fields.title) || (!fields.body)) throw new Error('Both fields of the article must be submitted');
 
-    if (!existsSync(dbPathArticles)) {
-      console.log(' asdlmaslmsd');
+    if (!existsSync(dbPathArticles))
       await createDataBase('[]', dbPathArticles);
-    }
 
-    const articles: IArticle[] = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+    const articles: IArticle[] = JSON.parse(await fs.readFile(dbPathArticles, 'utf-8'));
     const id = (() => {
       if (!articles.length) return 1;
         
       return articles[articles.length - 1].id + 1;
     })();
 
-    console.log(id);
-
     const newArticle = { id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null };
 
-    console.log(newArticle);
-    console.log(articles);
     articles.push(newArticle);
-
 
     await createDataBase(JSON.stringify(articles), dbPathArticles);
 
@@ -93,6 +86,29 @@ export async function createArticle(fields: { title: string, body: string }): Pr
       error: '',
       payload: newArticle
     }
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function deleteArticle(id: number): Promise<IError<IArticle>> {
+  try {
+    if (!id) throw new Error('ID article must be submitted');
+
+    const articles: IArticle[] = JSON.parse(await fs.readFile(dbPathArticles, 'utf-8'));
+    let article: IArticle | null = null;
+
+    for (let idx in articles) {
+      if (articles[idx].id === id)
+        articles.splice(Number(idx), 1);
+    }
+
+    await createDataBase(JSON.stringify(articles), dbPathArticles);
+
+    return {
+      error: '',
+      payload: article
+    };
   } catch (error) {
     return { error: (error as Error).message };
   }

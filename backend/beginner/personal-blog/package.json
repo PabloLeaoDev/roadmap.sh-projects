@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx tsx src/app/server.ts",
+    "dev:w": "npx tsx watch src/app/server.ts",
     "build": "npx tsc"
   },
   "keywords": [],

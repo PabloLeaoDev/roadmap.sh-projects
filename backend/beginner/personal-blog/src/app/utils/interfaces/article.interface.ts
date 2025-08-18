@@ -6,7 +6,7 @@ export default interface IArticle {
   updated_at: Date | string | null
 }
 
-export interface IUpgradeableArticleFields {
+export interface IFlexibleArticleFields {
   title: string,
   body: string
 }
