@@ -76,7 +76,7 @@ export async function createArticle(fields: IFlexibleArticleFields): Promise<IEr
       return articles[articles.length - 1].id + 1;
     })();
 
-    const newArticle = { id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: null };
+    const newArticle = { id, title: fields.title, body: fields.body, created_at: getCurrentDateFormat(), updated_at: getCurrentDateFormat() };
 
     articles.push(newArticle);
 

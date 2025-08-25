@@ -8,12 +8,6 @@ export async function renderHome(req: Request, res: Response) {
     if (error) throw new Error();
 
     res.render('index', { articles: payload });
-
-    return res.status(200).send({
-      success: true,
-      message: 'Articles were successfully rendered',
-      payload
-    });
   } catch (error) {
     return res.status(404).send({
       success: false,
@@ -29,12 +23,6 @@ export async function renderArticle(req: Request, res: Response) {
     if (error) throw new Error();
 
     res.render('article', { articles: payload });
-
-    return res.status(200).send({
-      success: true,
-      message: 'Article was successfully rendered',
-      payload
-    });
   } catch (error) {
     return res.status(404).send({
       success: false,

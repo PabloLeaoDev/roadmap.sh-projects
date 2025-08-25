@@ -14,7 +14,7 @@ export async function getArticles(id?: number): Promise<IError<IArticle>> {
       throw new Error('No articles in database');
     }
 
-    articles = JSON.parse(JSON.stringify(await fs.readFile(dbPathArticles)));
+    articles = JSON.parse(await fs.readFile(dbPathArticles, 'utf-8'));
 
     if (articles.length === 0) throw new Error('No articles in database');
 

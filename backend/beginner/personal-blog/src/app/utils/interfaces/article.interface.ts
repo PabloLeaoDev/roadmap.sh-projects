@@ -3,7 +3,7 @@ export default interface IArticle {
   title: string,
   body: string,
   created_at: Date | string,
-  updated_at: Date | string | null
+  updated_at: Date | string
 }
 
 export interface IFlexibleArticleFields {

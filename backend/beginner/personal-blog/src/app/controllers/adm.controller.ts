@@ -3,20 +3,10 @@ import * as admService from '../services/adm.service';
 
 export function renderLogin(req: Request, res: Response) {
   res.render('login');
-
-  return res.status(200).send({
-    success: true,
-    message: 'Admin login screen was rendered'
-  });
 }
 
 export function renderEditArticlePainel(req: Request, res: Response) {
   res.render('edit-article', { id: req.params.id });
-  
-  return res.status(200).send({
-    success: true,
-    message: 'Admin login screen was rendered'
-  });
 }
 
 export async function renderAdmPainel(req: Request, res: Response) {
@@ -30,12 +20,6 @@ export async function renderAdmPainel(req: Request, res: Response) {
     if (error) throw new Error();
 
     res.render('adm-painel', { articles: payload });
-
-    return res.status(200).send({
-      success: true,
-      message: 'Admin painel was rendered',
-      payload
-    });
   } catch (error) {
     return res.status(404).send({
       success: false,
