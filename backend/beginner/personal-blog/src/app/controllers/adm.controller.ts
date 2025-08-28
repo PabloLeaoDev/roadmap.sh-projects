@@ -4,10 +4,11 @@ import * as admService from '../services/adm.service';
 export function renderLogin(req: Request, res: Response) {
   res.render('login');
 
-  return res.status(404).send({
-    success: false,
+  return {
+    success: true,
+    message: 'login rendered',
     payload: null
-  });
+  };
 }
 
 export function renderEditArticlePainel(req: Request, res: Response) {
@@ -15,10 +16,11 @@ export function renderEditArticlePainel(req: Request, res: Response) {
 
   res.render('edit-article', { id });
 
-  return res.status(404).send({
-    success: false,
-    payload: id
-  });
+  return {
+    success: true,
+    message: 'edit-article rendered',
+    payload: { id }
+  };
 }
 
 export async function renderAdmPainel(req: Request, res: Response) {
@@ -31,7 +33,13 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
     if (error) throw new Error();
 
-    res.render('adm-painel', { articles: payload });
+    res.render('adm-painel', { articles: payload, success: true });
+
+    return {
+    success: true,
+    message: 'adm-painel rendered',
+    payload
+  };
   } catch (error) {
     return res.status(404).send({
       success: false,

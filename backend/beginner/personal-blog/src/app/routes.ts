@@ -10,10 +10,10 @@ router.get('/article/:id', guessController.renderArticle);
 
 // Adm
 router.get('/login/admin', admController.renderLogin);
-router.get('/edit/:id', admController.renderEditArticlePainel);
+router.get('/admin/edit/:id', admController.renderEditArticlePainel);
 router.post('/admin', admController.renderAdmPainel);
-router.post('/edit/:id', admController.editArticle);
-router.post('/new', admController.createArticle);
-router.post('/delete/:id', admController.deleteArticle);
+router.post('/admin/edit/:id', admController.editArticle);
+router.post('/admin/new', admController.createArticle);
+router.post('/admin/delete/:id', admController.deleteArticle);
 
 export default router;

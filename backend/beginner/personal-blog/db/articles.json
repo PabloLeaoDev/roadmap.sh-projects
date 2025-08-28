@@ -2,42 +2,46 @@
   {
     "id": 1,
     "title": "sdafav",
-    "body": "Testando Testador1",
+    "content": "Testando Testador1",
+    "category": "Testeeee",
+    "summary": "Testandooo",
+    "author": "Testador1",
+    "tags": "Test,Test1,Test2",
     "created_at": "18/08/2025",
     "updated_at": "18/08/2025"
   },
   {
     "id": 2,
     "title": "Teste",
-    "body": "Testando Testador",
+    "content": "Testando Testador",
     "created_at": "18/08/2025",
     "updated_at": null
   },
   {
     "id": 3,
     "title": "Teste",
-    "body": "Testando Testador",
+    "content": "Testando Testador",
     "created_at": "18/08/2025",
     "updated_at": null
   },
   {
     "id": 4,
     "title": "Teste",
-    "body": "Testando Testador",
+    "content": "Testando Testador",
     "created_at": "18/08/2025",
     "updated_at": null
   },
   {
     "id": 5,
     "title": "Teste",
-    "body": "Testando Testador",
+    "content": "Testando Testador",
     "created_at": "18/08/2025",
     "updated_at": null
   },
   {
     "id": 6,
     "title": "Teste",
-    "body": "Testando Testador",
+    "content": "Testando Testador",
     "created_at": "18/08/2025",
     "updated_at": null
   }

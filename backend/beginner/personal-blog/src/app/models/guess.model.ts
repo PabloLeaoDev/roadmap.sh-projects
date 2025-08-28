@@ -6,7 +6,7 @@ import { createDataBase } from '../utils/main.util';
 
 export async function getArticles(id?: number): Promise<IError<IArticle>> {
   try {
-    let articles: IArticle[];
+    let articles: IArticle[], payload: IArticle | IArticle[] | null | undefined;
 
     if (!existsSync(dbPathArticles)) {
       await createDataBase('[]', dbPathArticles);
@@ -18,7 +18,10 @@ export async function getArticles(id?: number): Promise<IError<IArticle>> {
 
     if (articles.length === 0) throw new Error('No articles in database');
 
-    if (!id) return { error: '', payload: articles };
+    payload = articles;
+
+    if (!id && (payload.length >= 1)) return { error: '', payload };
+    else if (!id && !payload.length)  return { error: 'There is no article', payload: null };
 
     return {
       error: '',
