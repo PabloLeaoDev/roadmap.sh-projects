@@ -3,10 +3,22 @@ import * as admService from '../services/adm.service';
 
 export function renderLogin(req: Request, res: Response) {
   res.render('login');
+
+  return res.status(404).send({
+    success: false,
+    payload: null
+  });
 }
 
 export function renderEditArticlePainel(req: Request, res: Response) {
-  res.render('edit-article', { id: req.params.id });
+  const id = req.params.id;
+
+  res.render('edit-article', { id });
+
+  return res.status(404).send({
+    success: false,
+    payload: id
+  });
 }
 
 export async function renderAdmPainel(req: Request, res: Response) {
