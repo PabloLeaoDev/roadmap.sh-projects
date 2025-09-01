@@ -5,6 +5,7 @@ import * as admController from './controllers/adm.controller';
 const router = Router();
 
 // Guess
+router.get('/', guessController.renderGotoHome);
 router.get('/home', guessController.renderHome);
 router.get('/article/:id', guessController.renderArticle);
 

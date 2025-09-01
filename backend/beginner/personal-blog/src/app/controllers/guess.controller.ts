@@ -2,6 +2,22 @@ import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service';
 import IArticle from '../utils/interfaces/article.interface';
 
+export async function renderGotoHome(req: Request, res: Response) {
+  try {
+    res.send('Acesse a <a href="http://localhost:3000/home">Home</a>');
+
+    return {
+      success: true,
+      message: 'Go to home rendered'
+    };
+  } catch (error) {
+    return res.status(404).send({
+      success: false,
+      message: (error as Error).message
+    });
+  }
+}
+
 export async function renderHome(req: Request, res: Response) {
   try {
     const { error, payload } = await guessService.getArticles();
