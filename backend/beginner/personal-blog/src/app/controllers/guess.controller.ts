@@ -8,7 +8,7 @@ export async function renderGotoHome(req: Request, res: Response) {
 
     return {
       success: true,
-      message: 'Go to home rendered'
+      message: 'go to home rendered'
     };
   } catch (error) {
     return res.status(404).send({
