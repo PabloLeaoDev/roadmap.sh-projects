@@ -1,6 +1,37 @@
 import { Request, Response } from 'express';
 import * as admService from '../services/adm.service';
 
+// export async function signup(req: Request, res: Response) {
+//   try {
+//     const { user, email, password } = req.body;
+//     const { token } = await admService.signup({ user, email, password });
+
+//     res.json({ token });
+
+//     return res.status(200).send({
+//       success: true,
+//       message: '',
+//       payload: null
+//     });
+//   } catch (error) {
+//     return res.status(400).send({
+//       success: false,
+//       message: (error as Error).message,
+//       payload: null
+//     });
+//   }
+// }
+
+export function renderResgister(req: Request, res: Response) {
+  res.render('register');
+
+  return {
+    success: true,
+    message: 'register rendered',
+    payload: null
+  };
+}
+
 export function renderLogin(req: Request, res: Response) {
   res.render('login');
 
@@ -9,6 +40,27 @@ export function renderLogin(req: Request, res: Response) {
     message: 'login rendered',
     payload: null
   };
+}
+
+export async function signin(req: Request, res: Response) {
+  try {
+    const { user, email, password } = req.body;
+    const { token } = await admService.signin({ user, email, password });
+
+    res.json({ token });
+
+    return res.status(200).send({
+      success: true,
+      message: 'adm logged',
+      payload: null
+    });
+  } catch (error) {
+    return res.status(400).send({
+      success: false,
+      message: (error as Error).message,
+      payload: null
+    });
+  }
 }
 
 export function renderEditArticlePainel(req: Request, res: Response) {
@@ -25,20 +77,18 @@ export function renderEditArticlePainel(req: Request, res: Response) {
 
 export async function renderAdmPainel(req: Request, res: Response) {
   try {
-    const isVerified = await admService.verifyAdmData(req.body);
+    // const isVerified = await admService.verifyAdmData(req.body);
 
-    if (!isVerified) throw new Error('Data admin isn\'t verified');
+    // if (!isVerified) throw new Error('Data admin isn\'t verified');
 
-    const { error, payload } = await admService.getArticles();
+    const { articles } = await admService.getArticles();
 
-    if (error) throw new Error();
-
-    res.render('adm-painel', { articles: payload, success: true });
+    res.render('adm-painel', { articles, success: true });
 
     return {
     success: true,
     message: 'adm-painel rendered',
-    payload
+    payload: articles
   };
   } catch (error) {
     return res.status(404).send({
@@ -50,14 +100,12 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
 export async function editArticle(req: Request, res: Response) {
   try {
-    const { error, payload } = await admService.updateArticleData(Number(req.params.id), req.body);
-
-    if (error) throw new Error();
+    const { article } = await admService.updateArticleData(Number(req.params.id), req.body);
 
     return res.status(200).send({
       success: true,
       message: 'Article edited successfully',
-      payload
+      payload: article
     });
   } catch (error) {
     return res.status(404).send({
@@ -69,14 +117,12 @@ export async function editArticle(req: Request, res: Response) {
 
 export async function createArticle(req: Request, res: Response) {
   try {
-    const { error, payload } = await admService.createArticle(req.body);
-
-    if (error) throw new Error();
+    const { article } = await admService.createArticle(req.body);
 
     return res.status(200).send({
       success: true,
       message: 'Article created successfully',
-      payload
+      payload: article
     });
   } catch (error) {
     return res.status(404).send({
@@ -88,14 +134,12 @@ export async function createArticle(req: Request, res: Response) {
 
 export async function deleteArticle(req: Request, res: Response) {
   try {
-    const { error, payload } = await admService.deleteArticle(Number(req.params.id));
-
-    if (error) throw new Error();
+    const { article } = await admService.deleteArticle(Number(req.params.id));
 
     return res.status(200).send({
       success: true,
       message: 'Article created successfully',
-      payload
+      payload: article
     });
   } catch (error) {
     return res.status(404).send({

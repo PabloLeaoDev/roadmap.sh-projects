@@ -5,10 +5,11 @@ import { Request, Response, NextFunction } from 'express';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
+// import { PrismaClient } from "@prisma/client";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url), __dirname = dirname(__filename);
 
+// const prisma = new PrismaClient();
 const app = express();
 
 app.set('view engine', 'ejs');
