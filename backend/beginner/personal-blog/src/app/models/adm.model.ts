@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { promises as fs, existsSync, readFile } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';

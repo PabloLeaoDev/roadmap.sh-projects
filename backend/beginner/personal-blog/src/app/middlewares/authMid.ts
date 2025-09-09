@@ -1,3 +1,4 @@
+import 'dotenv/config';   
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -15,4 +16,4 @@ export function authMid(req: Request, res: Response, next: NextFunction): Respon
     (req as any).user = user;
     next();
   });
-}   
+}
