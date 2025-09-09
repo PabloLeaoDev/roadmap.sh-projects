@@ -4,7 +4,7 @@ import IArticle from '../utils/interfaces/article.interface';
 
 export async function renderGotoHome(req: Request, res: Response) {
   try {
-    res.send('Acesse a <a href="http://localhost:3000/home">Home</a>');
+    renderHome(req, res);
 
     return {
       success: true,
@@ -20,16 +20,16 @@ export async function renderGotoHome(req: Request, res: Response) {
 
 export async function renderHome(req: Request, res: Response) {
   try {
-    const { error, payload } = await guessService.getArticles();
+    const { articles } = await guessService.getArticles() as { articles: IArticle[] };
 
-    if (error) throw new Error();
+    if (!articles.length) throw new Error();
 
-    res.render('home', { articles: payload, user: 'teste', category: 'Tecnologia' });
+    res.render('home', { articles, user: 'teste', category: 'Tecnologia' });
 
     return {
       success: true,
       message: 'home rendered',
-      payload
+      payload: articles
     };
   } catch (error) {
     return res.status(404).send({
@@ -42,16 +42,16 @@ export async function renderHome(req: Request, res: Response) {
 export async function renderArticle(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
-    const { error, payload } = await guessService.getArticles(id);
+    const { articles } = await guessService.getArticles(id) as { articles: IArticle[] };
 
-    if (error) throw new Error();
+    if (!articles) throw new Error();
 
-    res.render('article', { article: (payload as IArticle[])[0] || payload, user: 'teste' });
+    res.render('article', { article: articles[0] || articles, user: 'teste' });
 
     return {
       success: true,
       message: 'article rendered',
-      payload
+      payload: articles
     };
   } catch (error) {
     return res.status(404).send({

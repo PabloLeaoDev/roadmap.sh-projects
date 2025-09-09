@@ -49,11 +49,11 @@ export async function signin(req: Request, res: Response) {
 
     res.json({ token });
 
-    return res.status(200).send({
+    return {
       success: true,
       message: 'adm logged',
       payload: null
-    });
+    };
   } catch (error) {
     return res.status(400).send({
       success: false,

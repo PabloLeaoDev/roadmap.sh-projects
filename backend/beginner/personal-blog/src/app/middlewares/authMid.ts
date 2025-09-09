@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export function authMid(req: Request, res: Response, next: NextFunction): Response<any, Record<string, any>> | void {

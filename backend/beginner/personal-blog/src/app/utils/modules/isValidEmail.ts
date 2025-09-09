@@ -1,37 +1,21 @@
-import isAlphabetic from "./isAlphabetic";
+import isAlphabetic from './isAlphabetic';
 
 export default function isValidEmail(email: string): boolean {
   if (!email || (typeof email !== 'string')) return false;
-
+  
   const emailArr = email.split('@');
+  
+  if ((emailArr[0].length < 3) || (emailArr[0].length > 12)) return false;
+  if (!emailArr[1].includes('.')) return false;
+  if (!isAlphabetic(emailArr[0][0])) return false;
 
-  if (emailArr.length <= 1) return false;
-  if (!email[1].includes('.')) return false;
-
-  const emailUserPart = {
-    abcChars: 0,
-    numChars: 0,
-    spcChars: 0
-  } 
-
-  if (!isAlphabetic(email[0][0])) return false;
-
-  for (let char of email[0]) {
-    if (Number(char)) {
-      emailUserPart.numChars++;
-      continue;
-    }
-
-    if (isAlphabetic(char)) {
-      emailUserPart.abcChars++;
-      continue;
-    }
-
-    emailUserPart.spcChars++;
+  for (let char of emailArr[0]) {
+    if (Number(char)) continue;
+    if (isAlphabetic(char)) continue;
+    if (char !== '.') return false;
   }
-
-  if (emailUserPart.abcChars < 1) return false;
-  if ((emailUserPart.numChars === 0) && (emailUserPart.spcChars === 0)) return false;
 
   return true;
 }
+
+isValidEmail('admin@email.com')

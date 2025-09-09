@@ -1,5 +1,4 @@
 import { existsSync, promises as fs } from 'fs';
-import { IError } from '../utils/interfaces/response.interface';
 import IArticle from '../utils/interfaces/article.interface';
 import { dbPathArticles } from './adm.model';
 import { createDataBase } from '../utils/main.util';

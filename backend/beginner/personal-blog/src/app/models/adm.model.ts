@@ -28,14 +28,14 @@ export const dbPathArticles = resolve(__dirname, '..', '..', '..', 'db', 'articl
 // }
 
 export async function signin(admData: IAdmin) {
-  const { user, email, password } = JSON.parse(await fs.readFile(dbPathAdmin, 'utf-8'));
+  const { user, email, password } = JSON.parse(await fs.readFile(dbPathAdmin, 'utf-8'))[0];
 
   if (admData.user && admData.email) {
-    if ((admData.user !== user) || (admData.email !== email)) throw new Error();
+    if ((admData.user !== user) || (admData.email !== email)) throw new Error('Wrong User or Email');
   } else if (admData.user) {
-    if (admData.user !== user) throw new Error();
+    if (admData.user !== user) throw new Error('Wrong User');
   } else if (admData.email) {
-    if (admData.email !== email) throw new Error();
+    if (admData.email !== email) throw new Error('Wrong Email');
   } else throw new Error();
 
   const isPasswordValid = await bcrypt.compare(admData.password, password);
@@ -50,6 +50,8 @@ export async function signin(admData: IAdmin) {
 export async function updateArticleData(id: number, fields: IFlexibleArticleFields): Promise<{ article: IArticle | null }> {
   if (!id) throw new Error('ID article must be submitted');
   if ((!fields.title) && (!fields.body)) throw new Error('At least one article upgradeable field must be submitted');
+
+  console.log(dbPathArticles);
 
   const articles: IArticle[] = JSON.parse(await fs.readFile(dbPathArticles, 'utf-8'));
   let article: IArticle | null = null;

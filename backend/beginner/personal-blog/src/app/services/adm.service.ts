@@ -1,7 +1,7 @@
-import IArticle, { IFlexibleArticleFields } from "../utils/interfaces/article.interface";
-import IAdmin from "../utils/interfaces/admin.interface";
+import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface';
+import IAdmin from '../utils/interfaces/admin.interface';
 import * as admModel from '../models/adm.model';
-import { getArticles as gerGetArticles } from "../models/guess.model";
+import { getArticles as gerGetArticles } from '../models/guess.model';
 import { isValidUser, isValidEmail } from '../utils/main.util';
 
 // export async function signup(admData: IAdmin) {
