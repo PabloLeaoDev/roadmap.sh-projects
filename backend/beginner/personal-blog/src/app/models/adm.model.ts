@@ -2,9 +2,9 @@ import 'dotenv/config';
 import { promises as fs, existsSync, readFile } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface';
-import IAdmin from '../utils/interfaces/admin.interface';
-import { createDataBase, getCurrentDateFormat } from '../utils/main.util';
+import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface.ts';
+import IAdmin from '../utils/interfaces/admin.interface.ts';
+import { createDataBase, getCurrentDateFormat } from '../utils/main.util.ts';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
 

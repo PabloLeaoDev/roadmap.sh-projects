@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import * as guessService from '../services/guess.service';
-import IArticle from '../utils/interfaces/article.interface';
+import * as guessService from '../services/guess.service.ts';
+import IArticle from '../utils/interfaces/article.interface.ts';
 
 export async function renderGotoHome(req: Request, res: Response) {
   try {

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authMid } from './middlewares/authMid';
-import * as guessController from './controllers/guess.controller';
-import * as admController from './controllers/adm.controller';
+import { authMid } from './middlewares/authMid.ts';
+import * as guessController from './controllers/guess.controller.ts';
+import * as admController from './controllers/adm.controller.ts';
 
 const router = Router();
 

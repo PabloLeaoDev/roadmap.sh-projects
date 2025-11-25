@@ -1,7 +1,7 @@
 import { existsSync, promises as fs } from 'fs';
-import IArticle from '../utils/interfaces/article.interface';
-import { dbPathArticles } from './adm.model';
-import { createDataBase } from '../utils/main.util';
+import IArticle from '../utils/interfaces/article.interface.ts';
+import { dbPathArticles } from './adm.model.ts';
+import { createDataBase } from '../utils/main.util.ts';
 
 export async function getArticles(id?: number): Promise<{ articles: IArticle[] | IArticle }> {
   let articles: IArticle[];

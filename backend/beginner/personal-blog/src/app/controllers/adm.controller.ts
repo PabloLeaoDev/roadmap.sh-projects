@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as admService from '../services/adm.service';
+import * as admService from '../services/adm.service.ts';
 
 // export async function signup(req: Request, res: Response) {
 //   try {

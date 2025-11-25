@@ -1,8 +1,8 @@
-import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface';
-import IAdmin from '../utils/interfaces/admin.interface';
-import * as admModel from '../models/adm.model';
-import { getArticles as gerGetArticles } from '../models/guess.model';
-import { isValidUser, isValidEmail } from '../utils/main.util';
+import IArticle, { IFlexibleArticleFields } from '../utils/interfaces/article.interface.ts';
+import IAdmin from '../utils/interfaces/admin.interface.ts';
+import * as admModel from '../models/adm.model.ts';
+import { getArticles as gerGetArticles } from '../models/guess.model.ts';
+import { isValidUser, isValidEmail } from '../utils/main.util.ts';
 
 // export async function signup(admData: IAdmin) {
 //   const { user, email, password } = admData;

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import Routes from './routes'
+import Routes from './routes.ts'
 import { Request, Response, NextFunction } from 'express';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
