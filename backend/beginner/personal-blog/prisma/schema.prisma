@@ -14,21 +14,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Article {
-    id        Int      @id @default(autoincrement())
-    tags      String
-    title     String
-    author    String
-    content   String
-    summary   String
-    category  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Post {
+  id        Int      @id @default(autoincrement())
+  tags      String
+  title     String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  content   String
+  summary   String
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Admin {
-  id        Int        @id @default(autoincrement())
-  user      String
-  email     String
-  password  String
+model User {
+  id           Int        @id @default(autoincrement())
+  user         String
+  email        String
+  password     String
+  posts        Post[]
+  perm         Permission @relation(fields: [permId], references: [id])
+  permId       Int
+}
+
+model Permission {
+  id             Int      @id @default(autoincrement())
+  permDesc       String
+  users          User[]
 }

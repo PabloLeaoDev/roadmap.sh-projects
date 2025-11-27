@@ -1,5 +1,5 @@
 import { existsSync, promises as fs } from 'fs';
-import { IError } from '../interfaces/response.interface';
+import { IError } from '../interfaces/response.interface.ts';
 
 export default async function createPath(path: string): Promise<IError<Buffer<ArrayBufferLike>>> {
   try {

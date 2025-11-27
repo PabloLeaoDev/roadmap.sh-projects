@@ -1,8 +1,8 @@
-export default interface IAdmin {
+export default interface IUser {
   id?: number,
   user?: string,
   email?: string,
   password: string
 }
 
-export type TAdminKeys = 'user' | 'email' | 'password';
+export type TUserKeys = 'user' | 'email' | 'password';

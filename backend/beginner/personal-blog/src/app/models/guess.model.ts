@@ -1,10 +1,10 @@
 import { existsSync, promises as fs } from 'fs';
-import IArticle from '../utils/interfaces/article.interface.ts';
-import { dbPathArticles } from './adm.model.ts';
+import IPostTable from '../utils/interfaces/post.interface.ts';
+import { dbPathArticles } from './user.model.ts';
 import { createDataBase } from '../utils/main.util.ts';
 
-export async function getArticles(id?: number): Promise<{ articles: IArticle[] | IArticle }> {
-  let articles: IArticle[];
+export async function getArticles(id?: number): Promise<{ articles: IPostTable[] | IPostTable }> {
+  let articles: IPostTable[];
 
   if (!existsSync(dbPathArticles)) {
     await createDataBase('[]', dbPathArticles);

@@ -1,4 +1,4 @@
-import isAlphabetic from './isAlphabetic';
+import isAlphabetic from './isAlphabetic.ts';
 
 export default function isValidUser(user: string): boolean {
   if (!user || (typeof user !== 'string')) return false;

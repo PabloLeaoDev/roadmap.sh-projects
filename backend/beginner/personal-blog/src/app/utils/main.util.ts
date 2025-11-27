@@ -1,7 +1,7 @@
-import createPath from './modules/createPath';
-import getCurrentDateFormat from './modules/getCurrentDateFormat';
-import createDataBase from './modules/createDataBase';
-import isValidUser from './modules/isValidUser';
-import isValidEmail from './modules/isValidEmail';
+import createPath from './modules/createPath.ts';
+import getCurrentDateFormat from './modules/getCurrentDateFormat.ts';
+import createDataBase from './modules/createDataBase.ts';
+import isValidUser from './modules/isValidUser.ts';
+import isValidEmail from './modules/isValidEmail.ts';
 
 export { createPath, getCurrentDateFormat, createDataBase, isValidUser, isValidEmail };

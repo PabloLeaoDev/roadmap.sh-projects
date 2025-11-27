@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import createPath from './createPath';
+import createPath from './createPath.ts';
 
 export default async function createDataBase(fileContent = '[]', dataPath: string): Promise<void> {
   try {

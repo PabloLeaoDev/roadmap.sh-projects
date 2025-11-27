@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service.ts';
-import IArticle from '../utils/interfaces/article.interface.ts';
+import IPostTable from '../utils/interfaces/post.interface.ts';
 
 export async function renderGotoHome(req: Request, res: Response) {
   try {
@@ -20,7 +20,7 @@ export async function renderGotoHome(req: Request, res: Response) {
 
 export async function renderHome(req: Request, res: Response) {
   try {
-    const { articles } = await guessService.getArticles() as { articles: IArticle[] };
+    const { articles } = await guessService.getArticles() as { articles: IPostTable[] };
 
     if (!articles.length) throw new Error();
 
@@ -42,7 +42,7 @@ export async function renderHome(req: Request, res: Response) {
 export async function renderArticle(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
-    const { articles } = await guessService.getArticles(id) as { articles: IArticle[] };
+    const { articles } = await guessService.getArticles(id) as { articles: IPostTable[] };
 
     if (!articles) throw new Error();
 

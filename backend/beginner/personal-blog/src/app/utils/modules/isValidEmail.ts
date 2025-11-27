@@ -1,4 +1,4 @@
-import isAlphabetic from './isAlphabetic';
+import isAlphabetic from './isAlphabetic.ts';
 
 export default function isValidEmail(email: string): boolean {
   if (!email || (typeof email !== 'string')) return false;
