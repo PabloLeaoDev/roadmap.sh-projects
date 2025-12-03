@@ -457,8 +457,8 @@
                 <% } %>
             </h2>
             <p>
-                <%= articles && articles.length > 0 ? articles.length : 0 %> 
-                <%= articles && articles.length === 1 ? 'artigo encontrado' : 'artigos encontrados' %>
+                <%= posts && posts.length > 0 ? posts.length : 0 %> 
+                <%= posts && posts.length === 1 ? 'artigo encontrado' : 'artigos encontrados' %>
             </p>
         </div>
 
@@ -485,24 +485,24 @@
         </div>
 
         <!-- Grid de Artigos -->
-        <% if (articles && articles.length > 0) { %>
+        <% if (posts && posts.length > 0) { %>
             <div class="articles-grid">
-                <% articles.forEach(function(article) { %>
+                <% posts.forEach(function(post) { %>
                     <a href="/article/<%= article.id %>" class="article-card">
                         <div class="article-image">
-                            <% if (article.category) { %>
-                                <div class="article-category"><%= article.category %></div>
+                            <% if (post.category) { %>
+                                <div class="article-category"><%= post.category %></div>
                             <% } %>
                             <!-- Ícone baseado na categoria -->
-                            <% if (article.category === 'Tecnologia') { %>
+                            <% if (post.category === 'Tecnologia') { %>
                                 💻
-                            <% } else if (article.category === 'Educação') { %>
+                            <% } else if (post.category === 'Educação') { %>
                                 📚
-                            <% } else if (article.category === 'Saúde') { %>
+                            <% } else if (post.category === 'Saúde') { %>
                                 🏥
-                            <% } else if (article.category === 'Negócios') { %>
+                            <% } else if (post.category === 'Negócios') { %>
                                 💼
-                            <% } else if (article.category === 'Lifestyle') { %>
+                            <% } else if (post.category === 'Lifestyle') { %>
                                 🌟
                             <% } else { %>
                                 📄
@@ -510,28 +510,28 @@
                         </div>
                         
                         <div class="article-content">
-                            <h3 class="article-title"><%= article.title %></h3>
+                            <h3 class="article-title"><%= post.title %></h3>
                             
                             <% if (article.summary) { %>
                                 <p class="article-summary">
-                                    <%= article.summary.length > 120 ? article.summary.substring(0, 120) + '...' : article.summary %>
+                                    <%= post.summary.length > 120 ? post.summary.substring(0, 120) + '...' : post.summary %>
                                 </p>
                             <% } else { %>
                                 <p class="article-summary">
-                                    <%= article.content.length > 120 ? article.content.substring(0, 120) + '...' : article.content %>
+                                    <%= post.content.length > 120 ? post.content.substring(0, 120) + '...' : post.content %>
                                 </p>
                             <% } %>
                             
                             <div class="article-meta">
-                                <span class="article-author">📝 <%= article.author %></span>
+                                <span class="article-author">📝 <%= post.author %></span>
                                 <span class="article-date">
-                                    <%= article.createdAt ? new Date(article.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível' %>
+                                    <%= post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível' %>
                                 </span>
                             </div>
 
-                            <% if (article.tags) { %>
+                            <% if (post.tags) { %>
                                 <div class="article-tags">
-                                    <% article.tags.split(',').forEach(function(tag) { %>
+                                    <% post.tags.split(',').forEach(function(tag) { %>
                                         <% if (tag.trim()) { %>
                                             <span class="tag">#<%= tag.trim() %></span>
                                         <% } %>
@@ -574,7 +574,7 @@
                 <a href="#about">Sobre</a>
                 <a href="/login">Login</a>
             </div>
-            <p>&copy; 2024 MeuBlog. Todos os direitos reservados.</p>
+            <p>&copy; <%= new Date().getFullYear() %> MeuBlog. Todos os direitos reservados.</p>
             <p>Feito com ❤️ para compartilhar conhecimento</p>
         </div>
     </footer>

@@ -1,11 +1,10 @@
-import * as guessModel from '../models/guess.model';
-import IArticle from '../utils/interfaces/article.interface';
-import { IError } from '../utils/interfaces/response.interface';
+import * as guessModel from '../models/guess.model.ts';
+import { IPost } from '../utils/interfaces/post.interface.ts';
 
-export async function getArticles(id?: number): Promise<{ articles: IArticle[] | IArticle }> {
+export async function getPosts(id?: number): Promise<{ posts: IPost[] | IPost }> {
   if (id && isNaN(id)) throw new Error('Invalid User ID');
 
-  const { articles } = (id) ? await guessModel.getArticles(id) : await guessModel.getArticles();
+  const { posts } = (id) ? await guessModel.getPosts(id) : await guessModel.getPosts();
 
-  return { articles };
+  return { posts };
 }

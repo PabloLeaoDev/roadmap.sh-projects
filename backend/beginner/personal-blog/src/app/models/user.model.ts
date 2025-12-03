@@ -1,26 +1,45 @@
 import 'dotenv/config';
 import IPostTable, { IPost } from '../utils/interfaces/post.interface.ts';
 import IUser from '../utils/interfaces/admin.interface.ts';
-import { getCurrentDateFormat, isValidUser, isValidEmail } from '../utils/main.util.ts';
+import { getCurrentDateFormat, isValidUser, isValidEmail, isValidPassword } from '../utils/main.util.ts';
 import prisma from '../database/PrismaClient.ts';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
 
-// export async function compareWithVerifiedAdm(userData: IAdmin): Promise<{ error: boolean, message: string }> {
-//   const validAdmin = { user: 'test', email: 'test@hardcoded.com', password: 'isHardCodeAGoodPractice123' };
+export async function signup(userData: IUser) {
+  if (!userData) throw new Error('No data found');
+  if (!userData.user && !userData.email) throw new Error('You must set an user or an email');
+  if (!userData.password) throw new Error('You must set a password');
+  if (userData.user && (!isValidUser(userData.user))) throw new Error('Invalid user');
+  if (userData.email && (!isValidEmail(userData.email))) throw new Error('Invalid email');
+  if (userData.password && (!isValidPassword(userData.password))) throw new Error('Invalid password');
 
-//   if ((!userData.user) || (!userData.email) || (!userData.password)) throw new Error();
+  const hashedPassword = await bcrypt.hash(userData.password, 9);
 
-//   await createDataBase(JSON.stringify([ validAdmin ]), dbPathAdmin);
+  const user = await prisma.user.create({
+    data: {
+      user: userData.user,
+      email: userData.email,
+      password: hashedPassword
+    }
+  });
 
-//   for (let [ key ] of Object.entries(validAdmin))
-//     if (userData[key as TAdminKeys] !== validAdmin[key as TAdminKeys]) throw new Error();
+  const token = jwt.sign({ id: user.id }, (process.env.JWT_SECRET as string), { expiresIn: '1d' });
 
-//   return {
-//     error: false,
-//     message: ''
-//   };
-// }
+  return { login: user, token };
+}
+
+export async function getPosts(id?: number): Promise<{ posts: IPostTable[] | IPostTable }> {
+  let posts: IPostTable[];
+
+  if (id) posts = await prisma.post.findMany({ where: { id } });
+  else posts = await prisma.post.findMany();
+
+  if (!posts)
+    throw new Error('No posts in database');
+
+  return { posts };
+}
 
 export async function signin(userData: IUser) {
   if (!userData) throw new Error('No data found');
@@ -50,33 +69,33 @@ export async function signin(userData: IUser) {
   return { token };
 }
 
-export async function updatePostData(id: number, fields: IPost): Promise<{ article: IPostTable | null }> {
+export async function updatePostData(id: number, fields: IPost): Promise<{ post: IPostTable | null }> {
   if (!id)
-    throw new Error('ID article must be submitted');
+    throw new Error('ID post must be submitted');
   if (
     (!fields.title) &&
     (!fields.author) &&
     (!fields.content) &&
     (!fields.summary) && 
     (!fields.category)
-  ) throw new Error('At least one article upgradeable field must be submitted');
+  ) throw new Error('At least one post upgradeable field must be submitted');
 
-  const updateArticle: IPostTable | null = await prisma.post.update({
+  const updatePost: IPostTable | null = await prisma.post.update({
     where: { id },
     data: fields
   });
 
-  return { article: updateArticle };
+  return { post: updatePost };
 }
 
-export async function createPost(fields: IPost): Promise<{ article: IPostTable }> {
+export async function createPost(fields: IPost): Promise<{ post: IPostTable }> {
   if (
     (!fields.title) ||
     (!fields.author) ||
     (!fields.content) ||
     (!fields.summary) || 
     (!fields.category)
-  ) throw new Error('All obligatory fields of the article must be submitted');
+  ) throw new Error('All obligatory fields of the post must be submitted');
 
   const newPost: IPostTable = await prisma.post.create({
     data: {
@@ -86,16 +105,16 @@ export async function createPost(fields: IPost): Promise<{ article: IPostTable }
     }
   });
 
-  return { article: newPost };
+  return { post: newPost };
 }
 
-export async function deletePost(id: number): Promise<{ article: IPostTable | null }> {
+export async function deletePost(id: number): Promise<{ post: IPostTable | null }> {
   if (!id)
-    throw new Error('ID article must be submitted');
+    throw new Error('ID post must be submitted');
 
   const deletePost = await prisma.post.delete({
     where: { id }
   });
 
-  return { article: deletePost };
+  return { post: deletePost };
 }

@@ -1,20 +1,19 @@
 import IPostTable, { IPost } from '../utils/interfaces/post.interface.ts';
 import IUser from '../utils/interfaces/admin.interface.ts';
 import * as userModel from '../models/user.model.ts';
-import { getArticles as gerGetPosts } from '../models/guess.model.ts';
+import { getPosts as gerGetPosts } from '../models/guess.model.ts';
 import { isValidUser, isValidEmail } from '../utils/main.util.ts';
+import bcrypt from 'bcrypt';
 
-// export async function signup(userData: IAdmin) {
-//   const { user, email, password } = userData;
+export async function signup(userData: IUser) {
+  const { user, email, password } = userData;
 
-//   if (!user && !email) throw new Error('You must set an user or an email');
-//   if (user && (!isValidUser(user))) throw new Error('Invalid user');
-//   if (email && (!isValidEmail(email))) throw new Error('Invalid email');
+  if (!user && !email) throw new Error('You must set an user or an email');
+  if (user && (!isValidUser(user))) throw new Error('Invalid user');
+  if (email && (!isValidEmail(email))) throw new Error('Invalid email');
 
-//   const hashedPassword = await bcrypt.hash(password, 9);
-
-//   const { token } = admModel.signup({ user, email, hashedPassword });
-// }
+  const { token } = userModel.signup({ user, email, password });
+}
 
 export async function signin(userData: IUser) {
   if (!userData) throw new Error('No data found');
@@ -30,34 +29,34 @@ export async function signin(userData: IUser) {
   return { token };
 }
 
-export async function getPosts(): Promise<{ articles: IPostTable[] | IPostTable }> {
-  const { articles } = await gerGetPosts();
+export async function getPosts(): Promise<{ posts: IPostTable[] | IPostTable }> {
+  const { posts } = await gerGetPosts();
 
-  return { articles };
+  return { posts };
 }
 
-export async function updateArticleData(id: number, data: IPost): Promise<{ article: IPostTable | null }> {
+export async function updatePostData(id: number, data: IPost): Promise<{ post: IPostTable | null }> {
   if ((!id) || isNaN(id)) throw new Error('Invalid User ID');
 
-  const { article } = await userModel.updatePostData(id, { title: data.title, author: data.author, content: data.content, summary: data.summary, category: data.category, tags: data.tags });
+  const { post } = await userModel.updatePostData(id, { title: data.title, author: data.author, content: data.content, summary: data.summary, category: data.category, tags: data.tags });
   
-  if (!article) throw new Error('There is no article to update');
+  if (!post) throw new Error('There is no post to update');
 
-  return { article };
+  return { post };
 }
 
-export async function createPost(data: IPost): Promise<{ article: IPostTable }> {
-  const { article } = await userModel.createPost(data);
+export async function createPost(data: IPost): Promise<{ post: IPostTable }> {
+  const { post } = await userModel.createPost(data);
 
-  return { article };
+  return { post };
 }
 
-export async function deletePost(id: number): Promise<{ article: IPostTable }> {
+export async function deletePost(id: number): Promise<{ post: IPostTable }> {
   if ((!id) || isNaN(id)) throw new Error('Invalid User ID');
 
-  const { article } = await userModel.deletePost(id);
+  const { post } = await userModel.deletePost(id);
   
-  if (!article) throw new Error('There is no article to delete');
+  if (!post) throw new Error('There is no post to delete');
 
-  return { article };
+  return { post };
 }

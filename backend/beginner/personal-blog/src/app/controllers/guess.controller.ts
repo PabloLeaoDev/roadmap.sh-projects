@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service.ts';
 import IPostTable from '../utils/interfaces/post.interface.ts';
+import { IError } from '../utils/interfaces/response.interface.ts';
 
 export async function renderGotoHome(req: Request, res: Response) {
   try {
@@ -20,16 +21,14 @@ export async function renderGotoHome(req: Request, res: Response) {
 
 export async function renderHome(req: Request, res: Response) {
   try {
-    const { articles } = await guessService.getArticles() as { articles: IPostTable[] };
+    const { posts } = await guessService.getPosts() as { posts: IPostTable[] };
 
-    if (!articles.length) throw new Error();
-
-    res.render('home', { articles, user: 'teste', category: 'Tecnologia' });
+    res.render('home', { posts, user: 'teste', category: 'Tecnologia' });
 
     return {
       success: true,
       message: 'home rendered',
-      payload: articles
+      payload: posts
     };
   } catch (error) {
     return res.status(404).send({
@@ -39,19 +38,19 @@ export async function renderHome(req: Request, res: Response) {
   }
 }
 
-export async function renderArticle(req: Request, res: Response) {
+export async function renderPost(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
-    const { articles } = await guessService.getArticles(id) as { articles: IPostTable[] };
+    const { posts } = await guessService.getPosts(id) as { posts: IPostTable[] };
 
-    if (!articles) throw new Error();
+    if (!posts) throw new Error();
 
-    res.render('article', { article: articles[0] || articles, user: 'teste' });
+    res.render('article', { article: posts[0] || posts, user: 'teste' });
 
     return {
       success: true,
       message: 'article rendered',
-      payload: articles
+      payload: posts
     };
   } catch (error) {
     return res.status(404).send({
