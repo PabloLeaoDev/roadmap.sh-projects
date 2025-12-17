@@ -12,7 +12,9 @@ export async function signup(userData: IUser) {
   if (user && (!isValidUser(user))) throw new Error('Invalid user');
   if (email && (!isValidEmail(email))) throw new Error('Invalid email');
 
-  const { token } = userModel.signup({ user, email, password });
+  const { token } = await userModel.signup({ user, email, password });
+
+  return { token };
 }
 
 export async function signin(userData: IUser) {
@@ -38,7 +40,7 @@ export async function getPosts(): Promise<{ posts: IPostTable[] | IPostTable }> 
 export async function updatePostData(id: number, data: IPost): Promise<{ post: IPostTable | null }> {
   if ((!id) || isNaN(id)) throw new Error('Invalid User ID');
 
-  const { post } = await userModel.updatePostData(id, { title: data.title, author: data.author, content: data.content, summary: data.summary, category: data.category, tags: data.tags });
+  const { post } = await userModel.updatePostData(id, { title: data.title, authorId: data.authorId, content: data.content, summary: data.summary, category: data.category, tags: data.tags });
   
   if (!post) throw new Error('There is no post to update');
 

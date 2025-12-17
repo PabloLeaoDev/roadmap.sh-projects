@@ -1,15 +1,17 @@
 import 'dotenv/config';
 import IPostTable, { IPost } from '../utils/interfaces/post.interface.ts';
 import IUser from '../utils/interfaces/admin.interface.ts';
-import { getCurrentDateFormat, isValidUser, isValidEmail, isValidPassword } from '../utils/main.util.ts';
+import { isValidUser, isValidEmail, isValidPassword } from '../utils/main.util.ts';
 import prisma from '../database/PrismaClient.ts';
 import bcrypt from 'bcrypt'; 
 import jwt from 'jsonwebtoken';
+import { Permission } from '../utils/enums/perm.enum.ts';
 
 export async function signup(userData: IUser) {
   if (!userData) throw new Error('No data found');
-  if (!userData.user && !userData.email) throw new Error('You must set an user or an email');
+  if (!userData.user || !userData.email) throw new Error('You must set an user or an email');
   if (!userData.password) throw new Error('You must set a password');
+  // Improve Validations Errors
   if (userData.user && (!isValidUser(userData.user))) throw new Error('Invalid user');
   if (userData.email && (!isValidEmail(userData.email))) throw new Error('Invalid email');
   if (userData.password && (!isValidPassword(userData.password))) throw new Error('Invalid password');
@@ -20,7 +22,9 @@ export async function signup(userData: IUser) {
     data: {
       user: userData.user,
       email: userData.email,
-      password: hashedPassword
+      password: hashedPassword,
+      posts: {},
+      permId: Permission.USER
     }
   });
 
@@ -50,9 +54,9 @@ export async function signin(userData: IUser) {
   let usr: IUser | null = null;
 
   if (userData.user)
-    usr = await prisma.user.findUnique({ where: { user: userData.user } });
+    usr = await prisma.user.findFirst({ where: { user: userData.user } });
   else if (userData.email)
-    usr = await prisma.user.findUnique({ where: { email: userData.email } });
+    usr = await prisma.user.findFirst({ where: { email: userData.email } });
 
   if (!usr)
     throw new Error('User not found');
@@ -74,7 +78,7 @@ export async function updatePostData(id: number, fields: IPost): Promise<{ post:
     throw new Error('ID post must be submitted');
   if (
     (!fields.title) &&
-    (!fields.author) &&
+    (!fields.authorId) &&
     (!fields.content) &&
     (!fields.summary) && 
     (!fields.category)
@@ -82,7 +86,10 @@ export async function updatePostData(id: number, fields: IPost): Promise<{ post:
 
   const updatePost: IPostTable | null = await prisma.post.update({
     where: { id },
-    data: fields
+    data: {
+      ...fields,
+      tags: fields.tags ?? ''
+    }
   });
 
   return { post: updatePost };
@@ -91,7 +98,7 @@ export async function updatePostData(id: number, fields: IPost): Promise<{ post:
 export async function createPost(fields: IPost): Promise<{ post: IPostTable }> {
   if (
     (!fields.title) ||
-    (!fields.author) ||
+    (!fields.authorId) ||
     (!fields.content) ||
     (!fields.summary) || 
     (!fields.category)
@@ -100,8 +107,7 @@ export async function createPost(fields: IPost): Promise<{ post: IPostTable }> {
   const newPost: IPostTable = await prisma.post.create({
     data: {
       ...fields,
-      createdAt: getCurrentDateFormat(),
-      updatedAt: getCurrentDateFormat()
+      tags: fields.tags ?? ''
     }
   });
 

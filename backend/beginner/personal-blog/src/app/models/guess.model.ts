@@ -1,11 +1,13 @@
 import prisma from '../database/PrismaClient.ts';
-import IPostTable from '../utils/interfaces/post.interface.ts';
+import { Post  } from '../../generated/prisma/client.ts';
 
-export async function getPosts(id?: number): Promise<{ posts: IPostTable[] | IPostTable }> {
-  let posts: IPostTable[];
+export async function getPosts(id?: number): Promise<{ posts: Post[] | Post }> {
+  let posts: Post[];
 
-  if (id) posts = await prisma.post.findMany({ where: { id } });
-  else posts = await prisma.post.findMany();
+  if (id)
+    posts = await prisma.post.findMany({ where: { id } });
+  else
+    posts = await prisma.post.findMany();
 
   if (!posts)
     throw new Error('No posts in database');

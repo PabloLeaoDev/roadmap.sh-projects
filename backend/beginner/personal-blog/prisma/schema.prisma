@@ -15,8 +15,8 @@ datasource db {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  tags      String
-  title     String
+  tags      String?
+  title     String   @unique 
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
   content   String
@@ -28,8 +28,8 @@ model Post {
 
 model User {
   id           Int        @id @default(autoincrement())
-  user         String
-  email        String
+  user         String     @unique
+  email        String     @unique  
   password     String
   posts        Post[]
   perm         Permission @relation(fields: [permId], references: [id])
