@@ -8,7 +8,8 @@ export function authMid(req: Request, res: Response, next: NextFunction): Respon
   const authHeader = req.headers['authorization'],
         token = authHeader && authHeader.split(' ')[1];
       
-  if (!token) return res.sendStatus(401);
+  if (!token) 
+    return res.sendStatus(401);
 
   jwt.verify(token, (process.env.JWT_SECRET as string), (err, user) => {
     if (err) return res.sendStatus(403);

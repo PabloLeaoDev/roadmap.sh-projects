@@ -12,6 +12,7 @@ router.get('/post/:id', guessController.renderPost);
 
 // Adm
 router.get('/login/admin', userController.renderLogin);
+router.get('/login/singup', userController.renderSigup);
 router.get('/admin/edit/:id', authMid, userController.renderEditPostPainel);
 router.get('/admin', authMid, userController.renderAdmPainel);
 // router.post('/admin/signup', admController.signup);

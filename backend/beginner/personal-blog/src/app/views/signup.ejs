@@ -109,7 +109,7 @@
     <div class="login-container">
         <div class="login-header">
             <h1>Painel Administrativo</h1>
-            <p>Faça login para acessar o sistema</p>
+            <p>Crie uma conta para acessar o sistema</p>
         </div>
 
         <% if (typeof error !== 'undefined' && error) { %>
@@ -124,18 +124,7 @@
             </div>
         <% } %>
 
-        <form id="loginForm" method="post">
-            <div class="form-group">
-                <label for="email">Usuário:</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    id="user" 
-                    name="user" 
-                    value="<%= typeof user !== 'undefined' ? user : '' %>"
-                >
-            </div>
-
+        <form action="/admin/signin" method="POST">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input 
@@ -144,6 +133,7 @@
                     id="email" 
                     name="email" 
                     value="<%= typeof email !== 'undefined' ? email : '' %>"
+                    required
                 >
             </div>
 
@@ -159,35 +149,8 @@
             </div>
 
             <button type="submit" class="btn">Entrar</button>
-            <a href="/login/singup">Ainda não possui uma conta? Clique aqui</a>
+            <a href="">Ainda não possui uma conta? Clique aqui</a>
         </form>
     </div>
-    <script>
-        const form = document.getElementById('loginForm');
-
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            console.log(data);
-        });
-        /*
-        window.location.href.split();
-        fetch('https://example.com/api/data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    key: 'value'
-                })
-            })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));   
-        */
-    </script>
 </body>
 </html>

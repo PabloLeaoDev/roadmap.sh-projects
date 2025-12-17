@@ -43,6 +43,16 @@ export function renderLogin(req: Request, res: Response) {
   };
 }
 
+export function renderSigup(req: Request, res: Response) {
+  res.render('signup');
+
+  return {
+    success: true,
+    message: 'signup rendered',
+    payload: null
+  };
+}
+
 export async function signin(req: Request, res: Response) {
   try {
     const { user, email, password } = req.body;
