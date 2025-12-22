@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export function authMid(req: Request, res: Response, next: NextFunction): Response<any, Record<string, any>> | void {
+export function verifyAuthMid(req: Request, res: Response, next: NextFunction): Response<any, Record<string, any>> | void {
   console.log(req.headers);
 
   const authHeader = req.headers['authorization'],

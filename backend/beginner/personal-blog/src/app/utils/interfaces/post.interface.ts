@@ -1,13 +1,7 @@
-export interface IPost {
-  title: string,
-  authorId: number,
-  content: string,
-  summary: string,
-  category: string,
-  tags: string | null
-}
-export default interface IPostTable extends IPost {
-  id: number,
-  createdAt: Date | string,
-  updatedAt: Date | string
-}
+import { Post } from '../../../generated/prisma/client.ts';
+
+export type IPostBase = Omit<Post, 'id' | 'createdAt' | 'updatedAt'>;
+export type IPostCreate = IPostBase;
+export type IUserUpdate = Partial<IPostCreate>;
+export type IPost = Post;
+export type IPostNoDate = Omit<IPost, 'createdAt' | 'updatedAt'>;

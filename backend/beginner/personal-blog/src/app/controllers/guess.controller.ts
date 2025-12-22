@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as guessService from '../services/guess.service.ts';
-import { Post  } from '../../generated/prisma/client.ts';
-import { IError } from '../utils/interfaces/response.interface.ts';
+import { IPost, IPostCreate, IPostUpdate } from '../utils/interfaces/post.interface.ts';
 
 export async function renderGotoHome(req: Request, res: Response) {
   try {
@@ -21,7 +20,7 @@ export async function renderGotoHome(req: Request, res: Response) {
 
 export async function renderHome(req: Request, res: Response) {
   try {
-    const { posts } = await guessService.getPosts() as { posts: Post[] };
+    const { posts } = await guessService.getPosts() as { posts: IPost[] };
 
     res.render('home', { posts, user: 'teste', category: 'Tecnologia' });
 
@@ -41,7 +40,7 @@ export async function renderHome(req: Request, res: Response) {
 export async function renderPost(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
-    const { posts } = await guessService.getPosts(id) as { posts: Post[] };
+    const { posts } = await guessService.getPosts(id) as { posts: IPost[] };
 
     if (!posts) throw new Error();
 

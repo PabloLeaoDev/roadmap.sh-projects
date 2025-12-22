@@ -159,11 +159,14 @@
             </div>
 
             <button type="submit" class="btn">Entrar</button>
+            <a href="/" class="btn">Voltar</a>
             <a href="/login/singup">Ainda não possui uma conta? Clique aqui</a>
         </form>
     </div>
     <script>
-        const form = document.getElementById('loginForm');
+        const form = document.getElementById('loginForm'),
+              url = window.location.href.split('/');
+
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -171,23 +174,17 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            console.log(data);
-        });
-        /*
-        window.location.href.split();
-        fetch('https://example.com/api/data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    key: 'value'
+            fetch(`${url[0]}//${url[1]}/admin/signin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 })
-            })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));   
-        */
+            .then((response) => response.json())
+            .then((data) => console.log(data))
+            .catch((error) => console.error(error));   
+        });
     </script>
 </body>
 </html>

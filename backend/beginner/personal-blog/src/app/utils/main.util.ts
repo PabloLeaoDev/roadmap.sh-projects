@@ -4,5 +4,16 @@ import createDataBase from './modules/createDataBase.ts';
 import isValidUser from './modules/isValidUser.ts';
 import isValidEmail from './modules/isValidEmail.ts';
 import isValidPassword from './modules/isValidPassword.ts';
+import generateToken from './modules/generateToken.ts';
+import userInputValidation from './modules/userInputValidation.ts';
 
-export { createPath, getCurrentDateFormat, createDataBase, isValidUser, isValidEmail, isValidPassword };
+export { 
+  createPath,
+  getCurrentDateFormat,
+  createDataBase,
+  isValidUser,
+  isValidEmail,
+  isValidPassword,
+  generateToken,
+  userInputValidation
+};
