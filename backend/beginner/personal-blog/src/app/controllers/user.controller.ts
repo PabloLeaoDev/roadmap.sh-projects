@@ -4,6 +4,7 @@ import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
 import { Permission } from '../utils/enums/perm.enum.ts';
 import { userInputValidation } from '../utils/main.util.ts';
+import { generateToken } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
 
@@ -15,7 +16,8 @@ export async function signup(req: Request, res: Response) {
   
     if (!permId) permId = Permission.GUESS;
 
-    const { token } = await userService.signup({ user, email, password, permId });
+    const createdUser = await userService.signup({ user, email, password, permId }),
+          token = generateToken(createdUser);
 
     const response = {
       success: true,
@@ -47,7 +49,8 @@ export async function signin(req: Request, res: Response) {
 
     if (!permId) permId = Permission.GUESS;
 
-    const { token } = await userService.signin({ user, email, password, permId });
+    const authorizedUser = await userService.signin({ user, email, password, permId }),
+          token = generateToken(authorizedUser);
 
     const response = {
       success: true,
@@ -76,11 +79,11 @@ export async function createPost(req: Request, res: Response) {
     const { title, authorId, content, summary, category, tags } = req.body as IPostCreate;
 
     if (
-      (!title) ||
-      (!content) ||
-      (!summary) || 
-      (!authorId) ||
-      (!category)
+         (!title)
+      || (!content)
+      || (!summary) 
+      || (!authorId)
+      || (!category)
     ) throw new Error('All obligatory fields of the post must be submitted');
 
     const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
@@ -115,11 +118,11 @@ export async function editPost(req: Request, res: Response) {
       throw new Error('ID post must be submitted');
     
     if (
-      (!fields.title) &&
-      (!fields.content) &&
-      (!fields.summary) && 
-      (!fields.authorId) &&
-      (!fields.category)
+         (!fields.title)
+      && (!fields.content)
+      && (!fields.summary) 
+      && (!fields.authorId)
+      && (!fields.category)
     ) throw new Error('At least one post upgradeable field must be submitted');
 
     const { post } = await userService.updatePostData({ id, ...fields });

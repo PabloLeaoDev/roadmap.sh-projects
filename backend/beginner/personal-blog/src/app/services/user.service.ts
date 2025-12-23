@@ -1,26 +1,18 @@
-import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
-import { IUser, IUserBase, IUserCreate, IUserUpdate } from '../utils/interfaces/user.interface.ts';
 import * as userModel from '../models/user.model.ts';
+import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
+import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { getPosts as gerGetPosts } from '../models/guess.model.ts';
 
 export async function signup(userData: IUserCreate) {
-  const { user, email, password, permId } = userData;
+  const { id, user, email } = await userModel.signup(userData);
 
-  const { login, token } = await userModel.signup(
-    { user, email, password, permId }
-  );
-
-  return { login, token };
+  return { id, user, email };
 }
 
 export async function signin(userData: IUserBase) {
-  const { user, email, password, permId } = userData;
+  const { id, user, email } = await userModel.signin(userData);
 
-  const { token } = await userModel.signin(
-    { user, email, password, permId }
-  );
-
-  return { token };
+  return { id, user, email };
 }
 
 export async function getPosts(): Promise<{ posts: IPost[] | IPost }> {

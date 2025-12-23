@@ -9,8 +9,5 @@ export async function getPosts(id?: number): Promise<{ posts: Post[] | Post }> {
   else
     posts = await prisma.post.findMany();
 
-  if (!posts)
-    throw new Error('No posts in database');
-
   return { posts };
 }

@@ -2,19 +2,21 @@ import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export function verifyAuthMid(req: Request, res: Response, next: NextFunction): Response<any, Record<string, any>> | void {
-  console.log(req.headers);
-
+export function verifyAuthMid(req: Request, res: Response, next: NextFunction): 
+  Response<any, Record<string, any>> | void 
+{
   const authHeader = req.headers['authorization'],
         token = authHeader && authHeader.split(' ')[1];
       
   if (!token) 
     return res.sendStatus(401);
 
-  jwt.verify(token, (process.env.JWT_SECRET as string), (err, user) => {
-    if (err) return res.sendStatus(403);
-
-    (req as any).user = user;
+  try {
+    const decoded = jwt.verify(token, (process.env.JWT_SECRET as string));
+    req.user = decoded;
+    
     next();
-  });
+  } catch (error) {
+    res.sendStatus(401);
+  }
 }
