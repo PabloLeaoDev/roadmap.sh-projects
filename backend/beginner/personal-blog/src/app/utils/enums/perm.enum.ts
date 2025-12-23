@@ -1,4 +1,4 @@
 export enum Permission {
-    USER,
+    GUESS = 1,
     ADMIN
 }

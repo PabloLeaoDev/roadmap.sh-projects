@@ -15,7 +15,7 @@ export async function signup(userData: IUserCreate) {
       email: userData.email,
       password: hashedPassword,
       posts: {},
-      permId: Permission.USER
+      permId: Permission.GUESS
     }
   });
 

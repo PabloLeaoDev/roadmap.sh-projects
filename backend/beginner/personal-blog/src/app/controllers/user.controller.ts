@@ -13,23 +13,29 @@ export async function signup(req: Request, res: Response) {
 
     userInputValidation({ user, email, password, confirmPassword }, true);
   
-    if (!permId) permId = Permission.USER;
+    if (!permId) permId = Permission.GUESS;
 
     const { token } = await userService.signup({ user, email, password, permId });
 
-    res.json({ token });
-
-    return res.status(200).send({
+    const response = {
       success: true,
-      message: '',
-      payload: null
-    });
+      message: 'User created successfully',
+      payload: { token }
+    };
+
+    res.status(200).json(response);
+
+    return response;
   } catch (error) {
-    return res.status(400).send({
+    const response = {
       success: false,
       message: (error as Error).message,
       payload: null
-    });
+    };
+
+    res.status(400).json(response);
+
+    return response;
   }
 }
 
@@ -39,23 +45,65 @@ export async function signin(req: Request, res: Response) {
     
     userInputValidation({ user, email, password });
 
-    if (!permId) permId = Permission.USER;
+    if (!permId) permId = Permission.GUESS;
 
     const { token } = await userService.signin({ user, email, password, permId });
 
-    res.json({ token });
-
-    return {
+    const response = {
       success: true,
-      message: 'adm logged',
-      payload: null
+      message: 'User already logged',
+      payload: { token }
     };
+
+    res.status(200).json(response);
+
+    return response;
   } catch (error) {
-    return res.status(400).send({
+    const response = {
       success: false,
       message: (error as Error).message,
       payload: null
-    });
+    };
+
+    res.status(400).json(response);
+
+    return response;
+  }
+}
+
+export async function createPost(req: Request, res: Response) {
+  try {
+    const { title, authorId, content, summary, category, tags } = req.body as IPostCreate;
+
+    if (
+      (!title) ||
+      (!content) ||
+      (!summary) || 
+      (!authorId) ||
+      (!category)
+    ) throw new Error('All obligatory fields of the post must be submitted');
+
+    const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
+    
+    const response = {
+      success: true,
+      message: 'Post created successfully',
+      payload: { post }
+    };
+
+    res.status(200).json(response);
+
+    return response;
+  } catch (error) {
+    const response = {
+      success: false,
+      message: (error as Error).message,
+      payload: null
+    };
+
+    res.status(400).json(response);
+
+    return response;
   }
 }
 
@@ -76,46 +124,27 @@ export async function editPost(req: Request, res: Response) {
 
     const { post } = await userService.updatePostData({ id, ...fields });
 
-    return res.status(200).send({
+    const response = {
       success: true,
       message: 'Post edited successfully',
-      payload: post
-    });
+      payload: { post }
+    };
+
+    res.status(200).json(response);
+
+    return response;
   } catch (error) {
-    return res.status(404).send({
+    const response = {
       success: false,
-      message: (error as Error).message
-    });
+      message: (error as Error).message,
+      payload: null
+    };
+
+    res.status(400).json(response);
+
+    return response;
   }
 }
-
-export async function createPost(req: Request, res: Response) {
-  try {
-    const { title, authorId, content, summary, category, tags } = req.body as IPostCreate;
-
-    if (
-      (!title) ||
-      (!content) ||
-      (!summary) || 
-      (!authorId) ||
-      (!category)
-    ) throw new Error('All obligatory fields of the post must be submitted');
-
-    const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
-
-    return res.status(200).send({
-      success: true,
-      message: 'Post created successfully',
-      payload: post
-    });
-  } catch (error) {
-    return res.status(404).send({
-      success: false,
-      message: (error as Error).message
-    });
-  }
-}
-
 export async function deletePost(req: Request, res: Response) {
   try {
     let { id } = req.params;
@@ -124,17 +153,26 @@ export async function deletePost(req: Request, res: Response) {
       throw new Error('ID post must be submitted');
 
     const { post } = await userService.deletePost(Number(id));
-
-    return res.status(200).send({
+    
+    const response = {
       success: true,
-      message: 'Post created successfully',
-      payload: post
-    });
+      message: 'Post deleted successfully',
+      payload: { post }
+    };
+
+    res.status(200).json(response);
+
+    return response;
   } catch (error) {
-    return res.status(404).send({
+    const response = {
       success: false,
-      message: (error as Error).message
-    });
+      message: (error as Error).message,
+      payload: null
+    };
+
+    res.status(400).json(response);
+
+    return response;
   }
 }
 
@@ -190,15 +228,24 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
     res.render('adm-painel', { posts, success: true });
 
-    return {
-    success: true,
-    message: 'adm-painel rendered',
-    payload: posts
-  };
+    const response = {
+      success: true,
+      message: 'Admin painel rendered',
+      payload: { posts }
+    };
+
+    res.status(200).json(response);
+
+    return response;
   } catch (error) {
-    return res.status(404).send({
+    const response = {
       success: false,
-      message: (error as Error).message
-    });
+      message: (error as Error).message,
+      payload: null
+    };
+
+    res.status(404).json(response);
+
+    return response;
   }
 }
