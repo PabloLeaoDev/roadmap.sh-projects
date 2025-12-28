@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
 import { Permission } from '../utils/enums/perm.enum.ts';
-import { userInputValidation } from '../utils/main.util.ts';
-import { generateToken } from '../utils/main.util.ts';
+import { userInputValidation, generateToken, generateCookie, resPattern } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
 
@@ -19,25 +18,15 @@ export async function signup(req: Request, res: Response) {
     const createdUser = await userService.signup({ user, email, password, permId }),
           token = generateToken(createdUser);
 
-    const response = {
-      success: true,
-      message: 'User created successfully',
-      payload: { token }
-    };
+    const response = resPattern({ success: true, message: 'User created successfully' });
 
-    res.status(200).json(response);
+    generateCookie(res, token);
 
-    return response;
+    return res.status(201).json(response);
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(400).json(response);
-
-    return response;
+    return res.status(400).json(response);
   }
 }
 
@@ -52,25 +41,28 @@ export async function signin(req: Request, res: Response) {
     const authorizedUser = await userService.signin({ user, email, password, permId }),
           token = generateToken(authorizedUser);
 
-    const response = {
-      success: true,
-      message: 'User already logged',
-      payload: { token }
-    };
+    const response = resPattern({ success: true, message: 'User already logged' });
 
-    res.status(200).json(response);
+    generateCookie(res, token);
 
-    return response;
+    return res.status(200).json(response);
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(400).json(response);
+    return res.status(400).json(response);
+  }
+}
 
-    return response;
+export async function login(req: Request, res: Response) {}
+
+export async function logout(req: Request, res: Response) {
+  try {
+    res.clearCookie('token');
+    return res.redirect('/');
+  } catch (error) {
+    const response = resPattern({ error: error as Error });
+
+    return res.status(400).json(response);
   }
 }
 
@@ -87,26 +79,13 @@ export async function createPost(req: Request, res: Response) {
     ) throw new Error('All obligatory fields of the post must be submitted');
 
     const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
-    
-    const response = {
-      success: true,
-      message: 'Post created successfully',
-      payload: { post }
-    };
+    const response = resPattern({ success: true, message: 'Post created successfully', payload: { post } });
 
-    res.status(200).json(response);
-
-    return response;
+    return res.status(200).json(response);
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(400).json(response);
-
-    return response;
+    return res.status(400).json(response);
   }
 }
 
@@ -126,28 +105,16 @@ export async function editPost(req: Request, res: Response) {
     ) throw new Error('At least one post upgradeable field must be submitted');
 
     const { post } = await userService.updatePostData({ id, ...fields });
+    const response = resPattern({ success: true, message: 'Post edited successfully', payload: { post } });
 
-    const response = {
-      success: true,
-      message: 'Post edited successfully',
-      payload: { post }
-    };
-
-    res.status(200).json(response);
-
-    return response;
+    return res.status(200).json(response);
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(400).json(response);
-
-    return response;
+    return res.status(400).json(response);
   }
 }
+
 export async function deletePost(req: Request, res: Response) {
   try {
     let { id } = req.params;
@@ -156,69 +123,32 @@ export async function deletePost(req: Request, res: Response) {
       throw new Error('ID post must be submitted');
 
     const { post } = await userService.deletePost(Number(id));
-    
-    const response = {
-      success: true,
-      message: 'Post deleted successfully',
-      payload: { post }
-    };
+    const response = resPattern({ success: true, message: 'Post deleted successfully', payload: { post } });
 
-    res.status(200).json(response);
-
-    return response;
+    return res.status(200).json(response);
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(400).json(response);
-
-    return response;
+    return res.status(400).json(response);
   }
 }
 
 export function renderResgister(req: Request, res: Response) {
-  res.render('register');
-
-  return {
-    success: true,
-    message: 'register rendered',
-    payload: null
-  };
+  return res.render('register');
 }
 
 export function renderLogin(req: Request, res: Response) {
-  res.render('login');
-
-  return {
-    success: true,
-    message: 'login rendered',
-    payload: null
-  };
+  return res.render('login');
 }
 
 export function renderSigup(req: Request, res: Response) {
-  res.render('signup');
-
-  return {
-    success: true,
-    message: 'signup rendered',
-    payload: null
-  };
+  return res.render('signup');
 }
 
 export function renderEditPostPainel(req: Request, res: Response) {
   const id = req.params.id;
 
-  res.render('edit-post', { id });
-
-  return {
-    success: true,
-    message: 'edit-post rendered',
-    payload: { id }
-  };
+  return res.render('edit-post', { id });
 }
 
 export async function renderAdmPainel(req: Request, res: Response) {
@@ -229,26 +159,10 @@ export async function renderAdmPainel(req: Request, res: Response) {
 
     const { posts } = await userService.getPosts();
 
-    res.render('adm-painel', { posts, success: true });
-
-    const response = {
-      success: true,
-      message: 'Admin painel rendered',
-      payload: { posts }
-    };
-
-    res.status(200).json(response);
-
-    return response;
+    return res.render('adm-painel', { posts, success: true });
   } catch (error) {
-    const response = {
-      success: false,
-      message: (error as Error).message,
-      payload: null
-    };
+    const response = resPattern({ error: error as Error });
 
-    res.status(404).json(response);
-
-    return response;
+    return res.status(404).json(response);
   }
 }

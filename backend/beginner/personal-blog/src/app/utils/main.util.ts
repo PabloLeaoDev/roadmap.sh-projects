@@ -6,6 +6,8 @@ import isValidEmail from './modules/isValidEmail.ts';
 import isValidPassword from './modules/isValidPassword.ts';
 import generateToken from './modules/generateToken.ts';
 import userInputValidation from './modules/userInputValidation.ts';
+import generateCookie from './modules/generateCookie.ts';
+import resPattern from './modules/resPattern.ts';
 
 export { 
   createPath,
@@ -15,5 +17,7 @@ export {
   isValidEmail,
   isValidPassword,
   generateToken,
-  userInputValidation
+  userInputValidation,
+  generateCookie,
+  resPattern
 };

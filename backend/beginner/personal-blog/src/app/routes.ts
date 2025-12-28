@@ -13,8 +13,9 @@ router.get('/login', userController.renderLogin);
 router.get('/singup', userController.renderSigup);
 
 // User Routes
-router.get('/admin/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.get('/admin', verifyAuthMid, userController.renderAdmPainel);
+router.get('/admin/logout', verifyAuthMid, userController.logout);
+router.get('/admin/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.post('/admin/signup', userController.signup);
 router.post('/admin/signin', userController.signin);
 router.post('/admin/edit/:id', verifyAuthMid, userController.editPost);

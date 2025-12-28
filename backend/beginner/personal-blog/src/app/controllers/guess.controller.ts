@@ -1,6 +1,7 @@
 import * as guessService from '../services/guess.service.ts'; 
 import { Request, Response } from 'express';
 import { IPost } from '../utils/interfaces/post.interface.ts';
+import { resPattern } from '../utils/main.util.ts';
 
 export async function renderHome(req: Request, res: Response) {
   try {
@@ -9,18 +10,10 @@ export async function renderHome(req: Request, res: Response) {
 
     const { posts } = await guessService.getPosts() as { posts: IPost[] };
 
-    res.render('home', { posts, user: 'teste', category: 'Tecnologia' });
-
-    return {
-      success: true,
-      message: 'Home page was rendered',
-      payload: { posts }
-    };
+    return res.render('home', { posts, user: 'teste', category: 'Tecnologia' });
   } catch (error) {
-    return res.status(404).send({
-      success: false,
-      message: (error as Error).message
-    });
+    const response = resPattern({ error: error as Error });
+    return res.status(404).send(response);
   }
 }
 
@@ -31,17 +24,9 @@ export async function renderPost(req: Request, res: Response) {
 
     if (!posts) throw new Error();
 
-    res.render('post', { article: posts[0] || posts, user: 'teste' });
-
-    return {
-      success: true,
-      message: 'Post page was rendered',
-      payload: { posts }
-    };
+    return res.render('post', { article: posts[0] || posts, user: 'teste' });
   } catch (error) {
-    return res.status(404).send({
-      success: false,
-      message: (error as Error).message
-    });
+    const response = resPattern({ error: error as Error });
+    return res.status(404).send(response);
   }
 }

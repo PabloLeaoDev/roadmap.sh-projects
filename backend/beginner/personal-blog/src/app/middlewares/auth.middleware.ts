@@ -5,14 +5,20 @@ import jwt from 'jsonwebtoken';
 export function verifyAuthMid(req: Request, res: Response, next: NextFunction): 
   Response<any, Record<string, any>> | void 
 {
-  const authHeader = req.headers['authorization'],
-        token = authHeader && authHeader.split(' ')[1];
+  const { token } = req.cookies;
       
   if (!token) 
     return res.sendStatus(401);
 
+  const secret = process.env.JWT_SECRET;
+
+  if (!secret) {
+    console.error('Error: undefined JWT_SECRET env variable.');
+    return res.sendStatus(500);
+  }
+
   try {
-    const decoded = jwt.verify(token, (process.env.JWT_SECRET as string));
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
     
     next();
