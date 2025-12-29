@@ -4,15 +4,15 @@ import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { getPosts as gerGetPosts } from '../models/guess.model.ts';
 
 export async function signup(userData: IUserCreate) {
-  const { id, user, email } = await userModel.signup(userData);
+  const { id, name, email } = await userModel.signup(userData);
 
-  return { id, user, email };
+  return { id, name, email };
 }
 
 export async function signin(userData: IUserBase) {
-  const { id, user, email } = await userModel.signin(userData);
+  const { id, name, email } = await userModel.signin(userData);
 
-  return { id, user, email };
+  return { id, name, email };
 }
 
 export async function getPosts(): Promise<{ posts: IPost[] | IPost }> {

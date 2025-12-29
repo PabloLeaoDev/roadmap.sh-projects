@@ -13,7 +13,7 @@ router.get('/login', userController.renderLogin);
 router.get('/singup', userController.renderSigup);
 
 // User Routes
-router.get('/admin', verifyAuthMid, userController.renderAdmPainel);
+router.get('/home/admin', verifyAuthMid, userController.renderDashboard);
 router.get('/admin/logout', verifyAuthMid, userController.logout);
 router.get('/admin/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.post('/admin/signup', userController.signup);

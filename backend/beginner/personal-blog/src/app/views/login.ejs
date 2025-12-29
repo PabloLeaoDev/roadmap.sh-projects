@@ -126,13 +126,13 @@
 
         <form id="loginForm" method="post">
             <div class="form-group">
-                <label for="email">Usuário:</label>
+                <label for="name">Usuário:</label>
                 <input 
                     type="text" 
                     class="form-control" 
-                    id="user" 
-                    name="user" 
-                    value="<%= typeof user !== 'undefined' ? user : '' %>"
+                    id="name" 
+                    name="name" 
+                    value="<%= typeof name !== 'undefined' ? name : '' %>"
                 >
             </div>
 
@@ -164,26 +164,28 @@
         </form>
     </div>
     <script>
-        const form = document.getElementById('loginForm'),
-              url = window.location.href.split('/');
+        const form = document.getElementById('loginForm');
 
-
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            fetch(`${url[0]}//${url[2]}/admin/signin`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.error(error));   
+            const response = await fetch(`/admin/signin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            if (result.success && result.redirectUrl)
+                window.location.href = result.redirectUrl; 
+            else
+                alert('Login Error');
         });
     </script>
 </body>

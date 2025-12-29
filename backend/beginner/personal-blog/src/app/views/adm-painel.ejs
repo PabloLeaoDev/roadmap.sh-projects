@@ -257,7 +257,7 @@
         <div class="page-header">
             <div>
                 <h2 class="page-title">Gerenciar Artigos</h2>
-                <p>Total de artigos: <%= articles ? articles.length : 0 %></p>
+                <p>Total de artigos: <%= posts ? posts.length : 0 %></p>
             </div>
             <a href="/admin/articles/create" class="btn btn-primary">+ Novo Artigo</a>
         </div>
@@ -267,7 +267,7 @@
                 <h3>Lista de Artigos</h3>
             </div>
 
-            <% if (articles && articles.length > 0) { %>
+            <% if (posts && posts.length > 0) { %>
                 <table class="articles-table">
                     <thead>
                         <tr>
@@ -280,7 +280,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% articles.forEach(function(article, index) { %>
+                        <% posts.forEach(function(article, index) { %>
                             <tr>
                                 <td><%= article.id || (index + 1) %></td>
                                 <td class="article-title" title="<%= article.title %>">

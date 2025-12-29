@@ -10,36 +10,36 @@ export async function signup(userData: IUserCreate) {
 
   const user = await prisma.user.create({
     data: {
-      user: userData.user,
+      name: userData.name,
       email: userData.email,
       password: hashedPassword,
       posts: {},
-      permId: Permission.GUESS
+      permId: Permission.ADMIN
     }
   });
 
-  return { id: user.id, user: user.user, email: user.email };
+  return { id: user.id, name: user.name, email: user.email };
 }
 
 export async function signin(userData: IUserBase) {
-  let usr: IUser | null = null;
+  let user: IUser | null = null;
 
-  if (userData.user)
-    usr = await prisma.user.findFirst({ where: { user: userData.user } });
+  if (userData.name)
+    user = await prisma.user.findFirst({ where: { name: userData.name } });
   else if (userData.email)
-    usr = await prisma.user.findFirst({ where: { email: userData.email } });
+    user = await prisma.user.findFirst({ where: { email: userData.email } });
 
-  if (!usr)
+  if (!user)
     throw new Error('User not found');
 
-  const { id, user, email, password } = usr;
+  const { id, name, email, password } = user;
 
   const isPasswordValid = await bcrypt.compare(userData.password, password);
   
   if (!isPasswordValid)
     throw new Error('Invalid credentials');
 
-  return { id, user, email };
+  return { id, name, email };
 }
 
 export async function getPosts(id?: number): Promise<{ posts: IPost[] | IPost }> {

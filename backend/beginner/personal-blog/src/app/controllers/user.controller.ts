@@ -9,20 +9,21 @@ import { userInputValidation, generateToken, generateCookie, resPattern } from '
 
 export async function signup(req: Request, res: Response) {
   try {
-    let { user, email, password, confirmPassword, permId } = req.body as IUserCreate & { confirmPassword: string };
+    let { name, email, password, confirmPassword, permId } = req.body as IUserCreate & { confirmPassword: string };
 
-    userInputValidation({ user, email, password, confirmPassword }, true);
+    userInputValidation({ name, email, password, confirmPassword }, true);
   
-    if (!permId) permId = Permission.GUESS;
+    if (!permId) permId = Permission.ADMIN;
 
-    const createdUser = await userService.signup({ user, email, password, permId }),
+    const createdUser = await userService.signup({ name, email, password, permId }),
           token = generateToken(createdUser);
-
-    const response = resPattern({ success: true, message: 'User created successfully' });
 
     generateCookie(res, token);
 
-    return res.status(201).json(response);
+    return res.status(201).json({ 
+      success: true, 
+      redirectUrl: '/home/admin' 
+    });
   } catch (error) {
     const response = resPattern({ error: error as Error });
 
@@ -32,28 +33,27 @@ export async function signup(req: Request, res: Response) {
 
 export async function signin(req: Request, res: Response) {
   try {
-    let { user, email, password, permId } = req.body as IUserBase;
+    let { name, email, password, permId } = req.body as IUserBase;
     
-    userInputValidation({ user, email, password });
+    userInputValidation({ name, email, password });
 
-    if (!permId) permId = Permission.GUESS;
+    if (!permId) permId = Permission.ADMIN;
 
-    const authorizedUser = await userService.signin({ user, email, password, permId }),
+    const authorizedUser = await userService.signin({ name, email, password, permId }),
           token = generateToken(authorizedUser);
-
-    const response = resPattern({ success: true, message: 'User already logged' });
 
     generateCookie(res, token);
 
-    return res.status(200).json(response);
+    return res.json({ 
+      success: true, 
+      redirectUrl: '/home/admin' 
+    });
   } catch (error) {
     const response = resPattern({ error: error as Error });
 
     return res.status(400).json(response);
   }
 }
-
-export async function login(req: Request, res: Response) {}
 
 export async function logout(req: Request, res: Response) {
   try {
@@ -151,18 +151,13 @@ export function renderEditPostPainel(req: Request, res: Response) {
   return res.render('edit-post', { id });
 }
 
-export async function renderAdmPainel(req: Request, res: Response) {
+export async function renderDashboard(req: Request, res: Response) {
   try {
-    // const isVerified = await userService.verifyAdmData(req.body);
-
-    // if (!isVerified) throw new Error('Data admin isn\'t verified');
-
+    const user = req.user;
     const { posts } = await userService.getPosts();
 
-    return res.render('adm-painel', { posts, success: true });
+    return res.render('adm-painel', { success: true, user, posts  });
   } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(404).json(response);
+    res.redirect('/login');
   }
 }
