@@ -14,12 +14,12 @@ router.get('/singup', userController.renderSigup);
 
 // User Routes
 router.get('/home/admin', verifyAuthMid, userController.renderDashboard);
-router.get('/admin/logout', verifyAuthMid, userController.logout);
-router.get('/admin/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
+router.get('/logout', verifyAuthMid, userController.logout);
+// router.get('/admin/post/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.post('/admin/signup', userController.signup);
 router.post('/admin/signin', userController.signin);
-router.post('/admin/edit/:id', verifyAuthMid, userController.editPost);
-router.post('/admin/new', verifyAuthMid, userController.createPost);
-router.post('/admin/delete/:id', verifyAuthMid, userController.deletePost);
+router.post('/admin/post/edit/:id', verifyAuthMid, userController.editPost);
+router.post('/admin/post/new', verifyAuthMid, userController.createPost);
+router.delete('/admin/post/delete/:id', verifyAuthMid, userController.deletePost);
 
 export default router;

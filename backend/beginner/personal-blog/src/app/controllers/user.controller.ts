@@ -79,7 +79,11 @@ export async function createPost(req: Request, res: Response) {
     ) throw new Error('All obligatory fields of the post must be submitted');
 
     const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
-    const response = resPattern({ success: true, message: 'Post created successfully', payload: { post } });
+    const response = resPattern({ 
+      success: true, 
+      message: 'Post created successfully', 
+      payload: { post } 
+    });
 
     return res.status(200).json(response);
   } catch (error) {
@@ -105,7 +109,11 @@ export async function editPost(req: Request, res: Response) {
     ) throw new Error('At least one post upgradeable field must be submitted');
 
     const { post } = await userService.updatePostData({ id, ...fields });
-    const response = resPattern({ success: true, message: 'Post edited successfully', payload: { post } });
+    const response = resPattern({ 
+      success: true, 
+      message: 'Post edited successfully', 
+      payload: { post } 
+    });
 
     return res.status(200).json(response);
   } catch (error) {
@@ -123,9 +131,13 @@ export async function deletePost(req: Request, res: Response) {
       throw new Error('ID post must be submitted');
 
     const { post } = await userService.deletePost(Number(id));
-    const response = resPattern({ success: true, message: 'Post deleted successfully', payload: { post } });
+    const response = resPattern({ 
+      success: true, 
+      message: 'Post deleted successfully', 
+      payload: { post } 
+    });
 
-    return res.status(200).json(response);
+    return res.json(response);
   } catch (error) {
     const response = resPattern({ error: error as Error });
 

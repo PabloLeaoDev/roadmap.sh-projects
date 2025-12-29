@@ -8,14 +8,12 @@ export function verifyAuthMid(req: Request, res: Response, next: NextFunction):
   const { token } = req.cookies;
       
   if (!token) 
-    return res.sendStatus(401);
+    throw new Error('Token not found.');
 
   const secret = process.env.JWT_SECRET;
 
-  if (!secret) {
-    console.error('Error: undefined JWT_SECRET env variable.');
-    return res.sendStatus(500);
-  }
+  if (!secret)
+    throw new Error('Not configured JWT_SECRET.');
 
   try {
     const decoded = jwt.verify(token, secret);
@@ -23,6 +21,7 @@ export function verifyAuthMid(req: Request, res: Response, next: NextFunction):
     
     next();
   } catch (error) {
-    res.sendStatus(401);
+    res.clearCookie('token');
+    return res.redirect('/login');
   }
 }
