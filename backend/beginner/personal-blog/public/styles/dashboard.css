@@ -204,7 +204,8 @@ body {
     border-color: #f5c6cb;
 }
 
-#newPostForm {
+#newPostForm,
+#editPostForm {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -213,17 +214,18 @@ body {
     padding: 20px;
     border-radius: 10px;
 
-    #closeFormButton {
-        position: relative;
-        left: 100%;
-        cursor: pointer;
-    }
+}
 
-    #content {
-        width: 850px;
-        height: 300px;
-        resize: none;
-    }
+.closeFormButton.simple-button {
+    position: relative;
+    left: 100%;
+    cursor: pointer;
+}
+
+#content {
+    width: 850px;
+    height: 300px;
+    resize: none;
 }
 
 @media (max-width: 768px) {

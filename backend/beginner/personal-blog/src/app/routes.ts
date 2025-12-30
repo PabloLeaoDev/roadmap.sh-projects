@@ -18,7 +18,7 @@ router.get('/logout', verifyAuthMid, userController.logout);
 // router.get('/admin/post/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.post('/admin/signup', userController.signup);
 router.post('/admin/signin', userController.signin);
-router.post('/admin/post/edit/:id', verifyAuthMid, userController.editPost);
+router.patch('/admin/post/edit/:id', verifyAuthMid, userController.editPost);
 router.post('/admin/post/new', verifyAuthMid, userController.createPost);
 router.delete('/admin/post/delete/:id', verifyAuthMid, userController.deletePost);
 

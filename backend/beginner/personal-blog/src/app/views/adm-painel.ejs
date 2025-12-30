@@ -70,12 +70,11 @@
                                     <%= post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'N/A' %>
                                 </td>
                                 <td class="actions">
-                                    <a class="btn btn-warning">
+                                    <a class="edit-post-button btn btn-warning">
                                         ✏️ Editar
                                     </a>
                                     <form class="delete-post-form" 
-                                          style="display: inline;" 
-                                          onsubmit="return confirm('Tem certeza que deseja excluir este artigo?')">
+                                          style="display: inline;">
                                         <button type="submit" class="btn btn-danger">
                                             🗑️ Excluir
                                         </button>
@@ -96,7 +95,7 @@
     </div>
 
     <form id="newPostForm" method="POST" style="display: none;">
-        <button type="button" id="closeFormButton">X</button>
+        <button type="button" class="close-form-button" onclick="closeForm(newPostForm)">X</button>
         <div class="form-group">
             <label for="title">Título:</label>
             <input type="text" id="title" name="title" required placeholder="Digite o título do post">
@@ -130,7 +129,7 @@
         <button type="submit">Publicar Post</button>
     </form>
 
-    <form id="editPostForm" action="<%= posts ? `/admin/articless/edit/${posts.id}` : '/admin/articless/create' %>" method="POST" enctype="multipart/form-data" style="display: none;">
+    <form id="editPostForm" onsubmit="requestEdit(this.dataset.postId)" enctype="multipart/form-data" style="display: none;">
         <div class="form-body">
             <div class="form-group">
                 <label for="title">
@@ -269,18 +268,19 @@
         </div>
 
         <div class="form-actions">
-            <a href="/admin" class="btn btn-outline">Cancelar</a>
+            <a class="close-form-button btn btn-outline" onclick="closeForm(editPostForm)">Cancelar</a>
             <button type="submit" class="btn btn-primary">
-                <%= posts ? '💾 Salvar Alterações' : '➕ Criar Artigo' %>
+                💾 Salvar Alterações
             </button>
         </div>
     </form>
 
     <script>
+        const editPostbuttons = document.querySelectorAll('.edit-post-button');
         const deletePostForms = document.querySelectorAll('.delete-post-form');
 
-        function confirmDelete(articleId, articleTitle) {
-            return confirm(`Tem certeza que deseja excluir o artigo "${articleTitle}"?\n\nEsta ação não pode ser desfeita.`);
+        function closeForm(form) {
+            form.style.display = 'none';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -294,10 +294,6 @@
                     }, 500);
                 }, 5000);
             });
-        });
-
-        closeFormButton.addEventListener('click', function() {
-            newPostForm.style.display = 'none';
         });
 
         newPostButton.addEventListener('click', function() {
@@ -332,22 +328,54 @@
     </script>
 
     <% posts.forEach(function(post, index) { %>
-    <script>
-        deletePostForms['<%= index %>'].addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const response = await fetch(`/admin/post/delete/<%= post.id %>`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+        <script>
+            editPostbuttons['<%= index %>'].addEventListener('click', (event) => {
+                event.preventDefault();
+                editPostForm.style.display = 'block';
+                editPostForm.dataset.postId = '<%= post.id %>';
             });
+            
+            async function requestEdit() {
+                const formData = new FormData(editPostForm);
+                const data = Object.fromEntries(formData.entries());
 
-            // const result = await response.json();
+                const confirmation = confirm('Tem certeza que deseja editar esse post?');
 
-            window.location.reload();
-        });
-    </script>
+                if (!confirmation) return;
+
+                const response = await fetch(`/admin/post/edit/<%= post.id %>`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // const result = await response.json();
+
+                window.location.reload();
+            }
+        </script>
+        <script>
+            deletePostForms['<%= index %>'].addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const confirmation = confirm('Tem certeza que deseja excluir este artigo?');
+
+                if (!confirmation) return;
+
+                const response = await fetch(`/admin/post/delete/<%= post.id %>`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // const result = await response.json();
+
+                window.location.reload();
+            });
+        </script>
     <% }); %>
 
     <!-- EDIT SCRIPT -->
