@@ -1,18 +1,15 @@
 import 'dotenv/config';
 import prisma from '../database/PrismaClient.ts';
-import bcrypt from 'bcrypt'; 
 import { Permission } from '../utils/enums/perm.enum.ts';
 import { IUser, IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
 
 export async function signup(userData: IUserCreate) {
-  const hashedPassword = await bcrypt.hash(userData.password, 9);
-
   const user = await prisma.user.create({
     data: {
       name: userData.name,
       email: userData.email,
-      password: hashedPassword,
+      password: userData.password,
       posts: {},
       permId: Permission.ADMIN
     }
@@ -29,17 +26,7 @@ export async function signin(userData: IUserBase) {
   else if (userData.email)
     user = await prisma.user.findFirst({ where: { email: userData.email } });
 
-  if (!user)
-    throw new Error('User not found');
-
-  const { id, name, email, password } = user;
-
-  const isPasswordValid = await bcrypt.compare(userData.password, password);
-  
-  if (!isPasswordValid)
-    throw new Error('Invalid credentials');
-
-  return { id, name, email };
+  return { user };
 }
 
 export async function getPosts(id?: number): Promise<{ posts: IPost[] | IPost }> {
@@ -52,6 +39,18 @@ export async function getPosts(id?: number): Promise<{ posts: IPost[] | IPost }>
     throw new Error('No posts in database');
 
   return { posts };
+}
+
+export async function getUsersById(ids: number[] | number): Promise<{ users: IUser[] | null }> {
+  const users = await prisma.user.findMany({
+    where: {
+      id: {
+        in: Array.isArray(ids) ? ids : [ ids ]
+      }
+    }
+  });
+
+  return { users };
 }
 
 export async function updatePostData(data: IPostNoDate): Promise<{ post: IPost | null }> {
@@ -67,14 +66,6 @@ export async function updatePostData(data: IPostNoDate): Promise<{ post: IPost |
 }
 
 export async function createPost(fields: IPostCreate): Promise<{ post: IPostCreate }> {
-  if ( 
-       (!fields.title)
-    || (!fields.content)
-    || (!fields.summary) 
-    || (!fields.authorId)
-    || (!fields.category)
-  ) throw new Error('All obligatory fields of the post must be submitted');
-
   const newPost: IPost = await prisma.post.create({
     data: {
       ...fields,
@@ -86,9 +77,6 @@ export async function createPost(fields: IPostCreate): Promise<{ post: IPostCrea
 }
 
 export async function deletePost(id: number): Promise<{ post: IPost | null }> {
-  if (!id)
-    throw new Error('ID post must be submitted');
-
   const deletePost = await prisma.post.delete({
     where: { id }
   });

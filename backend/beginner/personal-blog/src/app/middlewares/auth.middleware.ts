@@ -5,23 +5,25 @@ import jwt from 'jsonwebtoken';
 export function verifyAuthMid(req: Request, res: Response, next: NextFunction): 
   Response<any, Record<string, any>> | void 
 {
-  const { token } = req.cookies;
-      
-  if (!token) 
-    throw new Error('Token not found.');
+  try {  
+    const { token } = req.cookies;
+  
+    if (!token) 
+      throw new Error('Token not found.');
 
-  const secret = process.env.JWT_SECRET;
+    const secret = process.env.JWT_SECRET;
 
-  if (!secret)
-    throw new Error('Not configured JWT_SECRET.');
-
-  try {
+    if (!secret)
+      throw new Error('Not configured JWT_SECRET.');
+  
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
     
     next();
   } catch (error) {
+    console.log(error);
     res.clearCookie('token');
+    
     return res.redirect('/login');
   }
 }

@@ -168,7 +168,7 @@ export async function renderDashboard(req: Request, res: Response) {
     const user = req.user;
     const { posts } = await userService.getPosts();
 
-    return res.render('adm-painel', { success: true, user, posts  });
+    return res.render('adm-painel', { success: true, user, posts });
   } catch (error) {
     res.redirect('/login');
   }
