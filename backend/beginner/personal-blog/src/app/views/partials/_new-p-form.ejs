@@ -1,0 +1,34 @@
+<form id="new-post-form" method="POST" style="display: none;">
+    <button type="button" class="close-form-button" onclick="this.closest('#new-post-form').remove()">X</button>
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required placeholder="Digite o título do post">
+    </div>
+
+    <div class="form-group">
+        <label for="category">Categoria:</label>
+        <select id="category" name="category">
+            <option value="">Selecione uma categoria</option>
+            <option value="tecnologia">Tecnologia</option>
+            <option value="estilo-de-vida">Estilo de Vida</option>
+            <option value="educacao">Educação</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="summary">Resumo:</label>
+        <input type="text" id="summary" name="summary" maxlength="150" placeholder="Breve descrição">
+    </div>
+
+    <div class="form-group">
+        <label for="content">Conteúdo:</label>
+        <textarea id="content" name="content" rows="10" required placeholder="Escreva seu post aqui..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="tags">Tags:</label>
+        <input type="text" id="tags" name="tags" placeholder="ex: js, html, web">
+    </div>
+
+    <button type="submit">Publicar Post</button>
+</form>

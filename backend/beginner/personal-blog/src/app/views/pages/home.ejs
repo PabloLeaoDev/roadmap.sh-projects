@@ -1,0 +1,93 @@
+<%- include('../partials/_header', {
+    user: user, 
+    text: {
+        title: '📚 MeuBlog'
+    },
+    headerActions: true
+}) %>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Descubra Artigos Incríveis</h1>
+        <p>Explore conhecimento, inspire-se e mantenha-se atualizado com nossos artigos selecionados</p>
+        
+        <form 
+            class="search-box" 
+            hx-get="/home" 
+            hx-target="#articles-container"
+            hx-push-url="true"
+            hx-indicator="#search-loading"
+        >
+            <input 
+                type="text"
+                class="search-input"
+                name="search"
+                placeholder="Buscar artigos por título, categoria ou tag..."
+                value="<%= search || '' %>"
+            >
+            <button type="submit" class="search-btn">
+                🔍 Buscar
+                <span id="search-loading" class="htmx-indicator">...</span>
+            </button>
+        </form>
+    </div>
+</section>
+
+<main class="main-content" id="articles-container">
+    <%- include('../partials/_articles-list', { 
+        posts: posts, 
+        search: search || '',
+        category: category || ''
+    }) %>
+</main>
+
+<%- include('../partials/_footer') %>
+
+<style>
+    /* Indicadores HTMX */
+    .htmx-indicator {
+        display: none;
+        margin-left: 0.5rem;
+    }
+    .htmx-request .htmx-indicator {
+        display: inline;
+    }
+    .htmx-swapping {
+        opacity: 0.5;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-settling {
+        opacity: 1;
+        transition: opacity 200ms ease-out;
+    }
+</style>
+
+<script>
+    // Smooth scroll para links internos
+    document.body.addEventListener('htmx:afterSettle', function(event) {
+        const target = event.target;
+        if (target.id === 'articles' && window.location.hash === '#articles') {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+
+    // Highlight do termo de busca (mantido do original)
+    function highlightSearchTerm() {
+        const searchTerm = '<%= typeof search !== "undefined" ? search : "" %>';
+        if (searchTerm) {
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            const elements = document.querySelectorAll('.article-title, .article-summary');
+            
+            elements.forEach(el => {
+                const text = el.textContent;
+                if (regex.test(text)) {
+                    el.innerHTML = text.replace(regex, '<mark style="background-color: yellow; padding: 0.2rem;">$1</mark>');
+                }
+            });
+        }
+    }
+
+    // Chamar highlight após DOM carregar e após updates HTMX
+    document.addEventListener('DOMContentLoaded', highlightSearchTerm);
+    document.body.addEventListener('htmx:afterSettle', highlightSearchTerm);
+</script>

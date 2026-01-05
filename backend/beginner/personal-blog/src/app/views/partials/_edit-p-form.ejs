@@ -1,0 +1,145 @@
+<form id="edit-post-form" onsubmit="requestEdit(this.dataset.postId)" enctype="multipart/form-data" style="display: none;">
+    <div class="form-body">
+        <div class="form-group">
+            <label for="title">
+                Título <span class="required">*</span>
+            </label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="title" 
+                name="title" 
+                value="<%= post ? post.title : '' %>" 
+                placeholder="Digite o título do artigo"
+                required
+                maxlength="200"
+            >
+            <div class="form-text">Máximo de 200 caracteres</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="author">
+                    Autor <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="author" 
+                    name="author" 
+                    value="<%= post ? post.author : (user ? user.name || user.email : '') %>" 
+                    placeholder="Nome do autor"
+                    required
+                    maxlength="100"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="status">
+                    Status <span class="required">*</span>
+                </label>
+                <div class="select-wrapper">
+                    <select class="form-control" id="status" name="status" required>
+                        <option value="draft" <%= ((post && (post.status === 'draft')) || !post) ? 'selected' : '' %>>
+                            Rascunho
+                        </option>
+                        <option value="published" <%= (post && (post.status === 'published')) ? 'selected' : '' %>>
+                            Publicado
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="summary">
+                Resumo
+            </label>
+            <textarea 
+                class="form-control" 
+                id="summary" 
+                name="summary" 
+                rows="3"
+                placeholder="Digite um breve resumo do artigo (opcional)"
+                maxlength="500"
+            ><%= post ? post.summary || '' : '' %></textarea>
+            <div class="form-text">Máximo de 500 caracteres (opcional)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="content">
+                Conteúdo <span class="required">*</span>
+            </label>
+            <textarea 
+                class="form-control" 
+                id="content" 
+                name="content" 
+                placeholder="Digite o conteúdo completo do artigo"
+                required
+            ><%= post ? post.content : '' %></textarea>
+            <div class="form-text">Conteúdo principal do artigo</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="category">
+                    Categoria
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="category" 
+                    name="category" 
+                    value="<%= post ? post.category || '' : '' %>" 
+                    placeholder="Ex: Tecnologia, Saúde, Educação"
+                    maxlength="50"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="tags">
+                    Tags
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="tags" 
+                    name="tags" 
+                    value="<%= post ? post.tags || '' : '' %>" 
+                    placeholder="Ex: javascript, nodejs, web"
+                >
+                <div class="form-text">Separe as tags por vírgula</div>
+            </div>
+        </div>
+
+        <% if (post) { %>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Criado em:</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        value="<%= new Date(post.createdAt).toLocaleString('pt-BR') %>" 
+                        readonly
+                    >
+                </div>
+                <div class="form-group">
+                    <label>Atualizado em:</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        value="<%= post.updatedAt ? new Date(post.updatedAt).toLocaleString('pt-BR') : 'Nunca' %>" 
+                        readonly
+                    >
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="form-actions">
+        <a class="close-form-button btn btn-outline" onclick="this.closest('#edit-post-form').remove()">Cancelar</a>
+        <button type="submit" class="btn btn-primary" hx-patch="/admin/post/edit/<%= post.id %>">
+            💾 Salvar Alterações
+        </button>
+    </div>
+</form>

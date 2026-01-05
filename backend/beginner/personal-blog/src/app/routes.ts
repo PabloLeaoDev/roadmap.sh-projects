@@ -11,6 +11,7 @@ router.get('/home', guessController.renderHome);
 router.get('/post/:id', guessController.renderPost);
 router.get('/login', userController.renderLogin);
 router.get('/singup', userController.renderSigup);
+router.get('/home/load-more', guessController.loadMoreArticles);
 
 // User Routes
 router.get('/home/admin', verifyAuthMid, userController.renderDashboard);

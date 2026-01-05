@@ -25,9 +25,14 @@ export async function signup(req: Request, res: Response) {
       redirectUrl: '/home/admin' 
     });
   } catch (error) {
-    const response = resPattern({ error: error as Error });
+    if (req.headers['hx-request'] === 'true') {
+        return res.render('partials/_alert', { 
+            error: error,
+            success: null 
+        });
+    }
 
-    return res.status(400).json(response);
+    return res.render('pages/signup', { error: error, success: null });
   }
 }
 

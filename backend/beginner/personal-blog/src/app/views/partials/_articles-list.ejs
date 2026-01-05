@@ -1,0 +1,110 @@
+<div class="section-title">
+    <h2 id="articles">
+        <% if (typeof search !== 'undefined' && search) { %>
+            Resultados para "<%= search %>"
+        <% } else if (typeof category !== 'undefined' && category) { %>
+            Categoria: <%= category %>
+        <% } else { %>
+            Últimos Artigos
+        <% } %>
+    </h2>
+    <p>
+        <%= posts && posts.length > 0 ? posts.length : 0 %> 
+        <%= posts && posts.length === 1 ? 'artigo encontrado' : 'artigos encontrados' %>
+    </p>
+</div>
+
+<!-- Filtros por Categoria -->
+<div class="filter-tabs">
+    <a 
+        href="/home" 
+        class="filter-tab <%= (!category || category === '') ? 'active' : '' %>"
+        hx-get="/home"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        📋 Todos
+    </a>
+    <a 
+        href="/home?category=Tecnologia" 
+        class="filter-tab <%= category === 'Tecnologia' ? 'active' : '' %>"
+        hx-get="/home?category=Tecnologia"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        💻 Tecnologia
+    </a>
+    <a 
+        href="/home?category=Educação" 
+        class="filter-tab <%= category === 'Educação' ? 'active' : '' %>"
+        hx-get="/home?category=Educação"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        📚 Educação
+    </a>
+    <a 
+        href="/home?category=Saúde" 
+        class="filter-tab <%= category === 'Saúde' ? 'active' : '' %>"
+        hx-get="/home?category=Saúde"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        🏥 Saúde
+    </a>
+    <a 
+        href="/home?category=Negócios" 
+        class="filter-tab <%= category === 'Negócios' ? 'active' : '' %>"
+        hx-get="/home?category=Negócios"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        💼 Negócios
+    </a>
+    <a 
+        href="/home?category=Lifestyle" 
+        class="filter-tab <%= category === 'Lifestyle' ? 'active' : '' %>"
+        hx-get="/home?category=Lifestyle"
+        hx-target="#articles-container"
+        hx-push-url="true"
+    >
+        🌟 Lifestyle
+    </a>
+</div>
+
+<!-- Grid de Artigos -->
+<% if (posts && posts.length > 0) { %>
+    <div class="articles-grid">
+        <% posts.forEach(function(post) { %>
+            <%- include('_article-card', { post: post }) %>
+        <% }); %>
+    </div>
+
+    <!-- Botão Carregar Mais -->
+    <div class="load-more-container">
+        <button 
+            class="load-more-btn"
+            hx-get="/home/load-more?offset=<%= posts.length %><%= category ? '&category=' + encodeURIComponent(category) : '' %><%= search ? '&search=' + encodeURIComponent(search) : '' %>"
+            hx-target=".articles-grid"
+            hx-swap="beforeend"
+            hx-indicator="#load-indicator"
+        >
+            📖 Carregar mais artigos
+            <span id="load-indicator" class="htmx-indicator">Carregando...</span>
+        </button>
+    </div>
+<% } else { %>
+    <div class="no-articles">
+        <div class="no-articles-icon">📄</div>
+        <h3>Nenhum artigo encontrado</h3>
+        <% if (typeof search !== 'undefined' && search) { %>
+            <p>Não encontramos artigos correspondentes à sua busca "<%= search %>".</p>
+            <p><a href="/home" hx-get="/home" hx-target="#articles-container" hx-push-url="true">Ver todos os artigos</a></p>
+        <% } else if (typeof category !== 'undefined' && category) { %>
+            <p>Não há artigos na categoria "<%= category %>" no momento.</p>
+            <p><a href="/home" hx-get="/home" hx-target="#articles-container" hx-push-url="true">Ver todos os artigos</a></p>
+        <% } else { %>
+            <p>Ainda não há artigos publicados. Volte em breve!</p>
+        <% } %>
+    </div>
+<% } %>

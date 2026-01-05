@@ -1,0 +1,20 @@
+<header class="header">
+    <div class="header-content" class="logo">
+      <h1><%= text ? text.title : 'Artigos Incríveis' %></h1>
+      <nav class="nav-links">
+          <a href="/home">Início</a>
+          <a href="/home#articles">Artigos</a>
+          <a href="/home#about">Sobre</a>
+          <% if (headerActions) { %>
+            <div class="header-actions">
+              <% if (user) { %>
+                  <a href="/login" class="admin-btn">🔧 Admin</a>
+                  <a href="/logout">Sair</a>
+              <% } else { %>
+                  <a href="/login" class="admin-btn">Login</a>
+              <% } %>
+            </div>
+          <% } %>
+      </nav>
+    </div>
+</header>

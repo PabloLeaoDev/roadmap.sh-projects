@@ -1,8 +1,9 @@
-import { IUserBase } from '../interfaces/user.interface.ts';
 import isValidEmail from './isValidEmail.ts';
 import isValidUser from './isValidUser.ts';
 import isValidPassword from './isValidPassword.ts';
+import { IUserBase } from '../interfaces/user.interface.ts';
 import { MakeOptional } from '../interfaces/utility.interface.ts';
+import { Request, Response } from 'express';
 
 export default function userInputValidation(
   userData: 
@@ -15,12 +16,12 @@ export default function userInputValidation(
     >,
   isSignup: boolean = false
 ): void {
-  if ((!userData.user) && (!userData.email))
+  if ((!userData.name) && (!userData.email))
     throw new Error('You must set an user or an email');
   
   if (
-    userData.user &&
-    (!isValidUser(userData.user))
+    userData.name &&
+    (!isValidUser(userData.name))
   ) throw new Error('Invalid user');
 
   if (

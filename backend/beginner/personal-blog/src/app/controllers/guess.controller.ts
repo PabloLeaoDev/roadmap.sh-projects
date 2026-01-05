@@ -8,6 +8,16 @@ export async function renderHome(req: Request, res: Response) {
     if (req.url === '/') 
       return res.redirect('/home');
 
+    const isHtmx = req.headers['hx-request'] === 'true';
+    
+    if (isHtmx) {
+      return res.render('partials/_articles-list', { 
+        posts, 
+        search, 
+        category 
+      });
+    }
+
     const { posts } = await guessService.getPosts() as { posts: IPost[] };
 
     return res.render('home', { posts, user: 'teste', category: 'Tecnologia' });
@@ -16,6 +26,23 @@ export async function renderHome(req: Request, res: Response) {
     return res.status(404).send(response);
   }
 }
+
+export const loadMoreArticles = async (req: Request, res: Response) => {
+    const { offset, search, category } = req.query;
+    const posts = await getPosts({ 
+        search, 
+        category, 
+        offset: parseInt(offset as string) 
+    });
+    
+    // Retornar apenas os cards
+    let html = '';
+    posts.forEach((post) => {
+        html += res.render('partials/_article-card', { post }, (err, html) => html);
+    });
+    
+    res.send(html);
+};
 
 export async function renderPost(req: Request, res: Response) {
   try {
