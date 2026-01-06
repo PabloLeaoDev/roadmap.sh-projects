@@ -23,7 +23,7 @@
                 class="search-input"
                 name="search"
                 placeholder="Buscar artigos por título, categoria ou tag..."
-                value="<%= search || '' %>"
+                value="<%= typeof search !== 'undefined' ? search : '' %>"
             >
             <button type="submit" class="search-btn">
                 🔍 Buscar
@@ -36,8 +36,8 @@
 <main class="main-content" id="articles-container">
     <%- include('../partials/_articles-list', { 
         posts: posts, 
-        search: search || '',
-        category: category || ''
+        search: typeof search !== 'undefined' ? search : '',
+        category: typeof category !== 'undefined' ? category : ''
     }) %>
 </main>
 

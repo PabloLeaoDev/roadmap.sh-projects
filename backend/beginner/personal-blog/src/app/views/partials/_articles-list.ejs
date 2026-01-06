@@ -1,8 +1,8 @@
 <div class="section-title">
     <h2 id="articles">
-        <% if (typeof search !== 'undefined' && search) { %>
+        <% if (search) { %>
             Resultados para "<%= search %>"
-        <% } else if (typeof category !== 'undefined' && category) { %>
+        <% } else if (category) { %>
             Categoria: <%= category %>
         <% } else { %>
             Últimos Artigos
@@ -14,7 +14,6 @@
     </p>
 </div>
 
-<!-- Filtros por Categoria -->
 <div class="filter-tabs">
     <a 
         href="/home" 
@@ -72,15 +71,13 @@
     </a>
 </div>
 
-<!-- Grid de Artigos -->
 <% if (posts && posts.length > 0) { %>
     <div class="articles-grid">
-        <% posts.forEach(function(post) { %>
+        <% posts.forEach((post) => { %>
             <%- include('_article-card', { post: post }) %>
         <% }); %>
     </div>
 
-    <!-- Botão Carregar Mais -->
     <div class="load-more-container">
         <button 
             class="load-more-btn"
@@ -97,10 +94,10 @@
     <div class="no-articles">
         <div class="no-articles-icon">📄</div>
         <h3>Nenhum artigo encontrado</h3>
-        <% if (typeof search !== 'undefined' && search) { %>
+        <% if (search) { %>
             <p>Não encontramos artigos correspondentes à sua busca "<%= search %>".</p>
             <p><a href="/home" hx-get="/home" hx-target="#articles-container" hx-push-url="true">Ver todos os artigos</a></p>
-        <% } else if (typeof category !== 'undefined' && category) { %>
+        <% } else if (category) { %>
             <p>Não há artigos na categoria "<%= category %>" no momento.</p>
             <p><a href="/home" hx-get="/home" hx-target="#articles-container" hx-push-url="true">Ver todos os artigos</a></p>
         <% } else { %>

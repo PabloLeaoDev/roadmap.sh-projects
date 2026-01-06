@@ -1,0 +1,52 @@
+<a class="article-card">
+    <div class="article-image">
+        <% if (post.category) { %>
+            <div class="article-category"><%= post.category %></div>
+        <% } %>
+        <!-- Ícone baseado na categoria -->
+        <% if (post.category === 'Tecnologia') { %>
+            💻
+        <% } else if (post.category === 'Educação') { %>
+            📚
+        <% } else if (post.category === 'Saúde') { %>
+            🏥
+        <% } else if (post.category === 'Negócios') { %>
+            💼
+        <% } else if (post.category === 'Lifestyle') { %>
+            🌟
+        <% } else { %>
+            📄
+        <% } %>
+    </div>
+    
+    <div class="article-content">
+        <h3 class="article-title"><%= post.title %></h3>
+        
+        <% if (post.summary) { %>
+            <p class="article-summary">
+                <%= post.summary.length > 120 ? post.summary.substring(0, 120) + '...' : post.summary %>
+            </p>
+        <% } else { %>
+            <p class="article-summary">
+                <%= post.content.length > 120 ? post.content.substring(0, 120) + '...' : post.content %>
+            </p>
+        <% } %>
+        
+        <div class="article-meta">
+            <span class="article-author">📝 <%= post.author %></span>
+            <span class="article-date">
+                <%= post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível' %>
+            </span>
+        </div>
+
+        <% if (post.tags) { %>
+            <div class="article-tags">
+                <% post.tags.split(',').forEach(function(tag) { %>
+                    <% if (tag.trim()) { %>
+                        <span class="tag">#<%= tag.trim() %></span>
+                    <% } %>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+</a>

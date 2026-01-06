@@ -8,6 +8,7 @@ import generateToken from './modules/generateToken.ts';
 import userInputValidation from './modules/userInputValidation.ts';
 import generateCookie from './modules/generateCookie.ts';
 import resPattern from './modules/resPattern.ts';
+import mainViewData from './modules/mainViewData.ts';
 
 export { 
   createPath,
@@ -19,5 +20,6 @@ export {
   generateToken,
   userInputValidation,
   generateCookie,
-  resPattern
+  resPattern,
+  mainViewData
 };

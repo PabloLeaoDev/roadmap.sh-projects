@@ -50,8 +50,25 @@
             >
         </div>
 
-        <button type="submit" class="btn">Entrar</button>
-        <a href="/" class="btn">Voltar</a>
+        <% if (isSignup) { %>
+            <div class="form-group">
+                <label for="confirm-password">Confirme a Senha:</label>
+                <input 
+                    type="password" 
+                    class="form-control" 
+                    id="confirm-password" 
+                    name="confirmPassword" 
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn">Cadastrar</button>
+            <a href="/login" class="btn">Voltar</a>
+        <% } else { %>
+            <button type="submit" class="btn">Entrar</button>
+            <a href="/" class="btn">Voltar</a>
+        <% } %>
+
         <a href="/singup">Ainda não possui uma conta? Clique aqui</a>
     </form>
 </div>
@@ -62,7 +79,7 @@
         const formData = new FormData(loginForm);
         const data = Object.fromEntries(formData.entries());
 
-        const response = await fetch(`/admin/signin`, {
+        const response = await fetch(`/admin/<% isSignup ? 'signup' : 'login' %>`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -75,6 +92,6 @@
         if (result.success && result.redirectUrl)
             window.location.href = result.redirectUrl; 
         else
-            alert('Login Error');
+            alert('<% isSignup ? "Signup" : "Signin" %> Error');
     });
 </script>

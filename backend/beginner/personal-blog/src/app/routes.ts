@@ -10,11 +10,11 @@ router.get('/', guessController.renderHome);
 router.get('/home', guessController.renderHome);
 router.get('/post/:id', guessController.renderPost);
 router.get('/login', userController.renderLogin);
-router.get('/singup', userController.renderSigup);
+router.get('/singup', userController.renderSignup);
 router.get('/home/load-more', guessController.loadMoreArticles);
 
 // User Routes
-router.get('/home/admin', verifyAuthMid, userController.renderDashboard);
+router.get('/dashboard', verifyAuthMid, userController.renderDashboard);
 router.get('/logout', verifyAuthMid, userController.logout);
 // router.get('/admin/post/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
 router.post('/admin/signup', userController.signup);

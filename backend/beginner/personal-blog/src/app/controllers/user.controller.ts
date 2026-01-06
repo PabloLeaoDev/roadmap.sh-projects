@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
 import { Permission } from '../utils/enums/perm.enum.ts';
-import { userInputValidation, generateToken, generateCookie, resPattern } from '../utils/main.util.ts';
+import { userInputValidation, generateToken, generateCookie, resPattern, mainViewData } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
 
@@ -22,7 +22,7 @@ export async function signup(req: Request, res: Response) {
 
     return res.status(201).json({ 
       success: true, 
-      redirectUrl: '/home/admin' 
+      redirectUrl: '/dashboard' 
     });
   } catch (error) {
     if (req.headers['hx-request'] === 'true') {
@@ -32,7 +32,16 @@ export async function signup(req: Request, res: Response) {
         });
     }
 
-    return res.render('pages/signup', { error: error, success: null });
+    return res.render('layouts/main', {
+      ...mainViewData,
+      page: 'sign',
+      styles: ['sign'],
+      data: {
+        isSignup: true, 
+        error: error,
+        success: null 
+      }
+    });
   }
 }
 
@@ -51,7 +60,7 @@ export async function signin(req: Request, res: Response) {
 
     return res.json({ 
       success: true, 
-      redirectUrl: '/home/admin' 
+      redirectUrl: '/dashboard' 
     });
   } catch (error) {
     const response = resPattern({ error: error as Error });
@@ -150,22 +159,37 @@ export async function deletePost(req: Request, res: Response) {
   }
 }
 
-export function renderResgister(req: Request, res: Response) {
-  return res.render('register');
-}
-
 export function renderLogin(req: Request, res: Response) {
-  return res.render('login');
+  return res.render('layouts/main', {
+    ...mainViewData,
+    page: 'sign',
+    styles: ['sign'],
+    data: {
+      isSignup: false
+    }
+  });
 }
 
-export function renderSigup(req: Request, res: Response) {
-  return res.render('signup');
+export function renderSignup(req: Request, res: Response) {
+  return res.render('layouts/main', {
+    ...mainViewData,
+    page: 'sign',
+    styles: ['sign'],
+    data: {
+      isSignup: true
+    }
+  });
 }
 
 export function renderEditPostPainel(req: Request, res: Response) {
   const id = req.params.id;
 
-  return res.render('edit-post', { id });
+  return res.render('layouts/main', {
+    ...mainViewData,
+    page: '',
+    styles: [''],
+    data: null
+  });
 }
 
 export async function renderDashboard(req: Request, res: Response) {
@@ -173,7 +197,12 @@ export async function renderDashboard(req: Request, res: Response) {
     const user = req.user;
     const { posts } = await userService.getPosts();
 
-    return res.render('adm-painel', { success: true, user, posts });
+    return res.render('layouts/main', {
+      ...mainViewData,
+      page: 'dashboard',
+      styles: ['dashboard'],
+      data: { success: true, user, posts }
+    });
   } catch (error) {
     res.redirect('/login');
   }

@@ -12,9 +12,8 @@
     <script src="/scripts/htmx.min.js"></script>
 </head>
 <body>
-    <%- body %>
+    <%- include(`../pages/${page}`, data) %>
     
-    <!-- Scripts adicionais -->
     <% if (scripts) { %>
         <% scripts.forEach((script) => { %>
             <script src="/scripts/<%= script %>.js"></script>
