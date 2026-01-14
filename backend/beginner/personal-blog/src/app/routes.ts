@@ -8,15 +8,18 @@ const router = Router();
 // Guess Routes
 router.get('/', guessController.renderHome);
 router.get('/home', guessController.renderHome);
-router.get('/post/:id', guessController.renderPost);
+// router.get('/post/:id', guessController.renderPost);
+// router.get('/post/:id', guessController.renderPostPartial);
 router.get('/login', userController.renderLogin);
-router.get('/singup', userController.renderSignup);
+router.get('/signup', userController.renderSignup);
 router.get('/home/load-more', guessController.loadMoreArticles);
 
 // User Routes
 router.get('/dashboard', verifyAuthMid, userController.renderDashboard);
 router.get('/logout', verifyAuthMid, userController.logout);
-// router.get('/admin/post/edit/:id', verifyAuthMid, userController.renderEditPostPainel);
+router.get('/admin/dashboard/partial', verifyAuthMid, userController.renderDashboardPartial);
+router.get('/admin/post/new-form', verifyAuthMid, userController.renderNewPostForm);
+router.get('/admin/post/edit-form/:id', verifyAuthMid, userController.renderEditPostForm);
 router.post('/admin/signup', userController.signup);
 router.post('/admin/signin', userController.signin);
 router.patch('/admin/post/edit/:id', verifyAuthMid, userController.editPost);

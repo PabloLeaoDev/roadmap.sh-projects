@@ -1,7 +1,8 @@
 import * as userService from '../services/user.service.ts';
+import * as guessService from '../services/guess.service.ts';
 import { Request, Response } from 'express';
 import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
-import { IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
+import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
 import { Permission } from '../utils/enums/perm.enum.ts';
 import { userInputValidation, generateToken, generateCookie, resPattern, mainViewData } from '../utils/main.util.ts';
 
@@ -26,9 +27,9 @@ export async function signup(req: Request, res: Response) {
     });
   } catch (error) {
     if (req.headers['hx-request'] === 'true') {
-        return res.render('partials/_alert', { 
-            error: error,
-            success: null 
+        return res.render('partials/_alert', {
+          error: (error as Error).message,
+          success: null
         });
     }
 
@@ -92,18 +93,21 @@ export async function createPost(req: Request, res: Response) {
       || (!category)
     ) throw new Error('All obligatory fields of the post must be submitted');
 
-    const { post } = await userService.createPost({ title, authorId, content, summary, category, tags });
+    const { post } = await userService.createPost({ title, authorId: Number(authorId), content, summary, category, tags });
+    const { users } = await userService.getUsersById(Number(authorId));
+
     const response = resPattern({ 
       success: true, 
       message: 'Post created successfully', 
       payload: { post } 
     });
 
-    return res.status(200).json(response);
+    res.render('partials/_post-row', { post: { ...post, author: users[0].name } });
   } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(400).json(response);
+    res.status(400).render('partials/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
   }
 }
 
@@ -122,7 +126,11 @@ export async function editPost(req: Request, res: Response) {
       && (!fields.category)
     ) throw new Error('At least one post upgradeable field must be submitted');
 
-    const { post } = await userService.updatePostData({ id, ...fields });
+    const { post } = await userService.updatePostData({
+      id,
+      ...fields,
+      authorId: Number(fields.authorId)
+    });
     const response = resPattern({ 
       success: true, 
       message: 'Post edited successfully', 
@@ -181,29 +189,42 @@ export function renderSignup(req: Request, res: Response) {
   });
 }
 
-export function renderEditPostPainel(req: Request, res: Response) {
-  const id = req.params.id;
+export function renderDashboard(req: Request, res: Response) {
+  const user = req.user;
 
   return res.render('layouts/main', {
     ...mainViewData,
-    page: '',
-    styles: [''],
-    data: null
+    page: 'dashboard',
+    styles: ['dashboard'],
+    data: { success: true, user }
   });
 }
-
-export async function renderDashboard(req: Request, res: Response) {
+export async function renderDashboardPartial(req: Request, res: Response) {
   try {
-    const user = req.user;
     const { posts } = await userService.getPosts();
 
-    return res.render('layouts/main', {
-      ...mainViewData,
-      page: 'dashboard',
-      styles: ['dashboard'],
-      data: { success: true, user, posts }
-    });
+    return res.render('partials/_dashboard-partial', { posts, user: req.user });
   } catch (error) {
-    res.redirect('/login');
+    return res.status(400).render('partials/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
   }
-}
+};
+
+export function renderNewPostForm(req: Request, res: Response) {
+    res.render('partials/_new-post-form', { user: req.user });
+};
+
+export async function renderEditPostForm(req: Request, res: Response) {
+  try {
+    const { posts } = await guessService.getPosts(Number(req.params.id));
+    
+    return res.render('partials/_edit-post-form', { post: (posts as IPost[])[0], user: req.user });
+  } catch (error) {
+    return res.status(400).render('partials/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
+  }
+};

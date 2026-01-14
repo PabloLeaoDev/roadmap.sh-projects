@@ -1,4 +1,4 @@
 export default {
   title: 'Meu Blog',
-  scripts: ['htmx.min']
+  scripts: ['htmx.min', 'hyperscript.min']
 };

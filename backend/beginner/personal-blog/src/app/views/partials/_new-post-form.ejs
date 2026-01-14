@@ -1,0 +1,74 @@
+<form hx-post="/admin/post/new"
+      hx-target=".articles-table"
+      hx-swap="afterbegin"
+      hx-indicator="#dashboard-loader"
+      _="on htmx:afterRequest 
+            if event.detail.successful
+                call closeModal()
+            end">
+    
+    <div class="form-group mb-3">
+        <label for="title" class="form-label">Título *</label>
+        <input type="text" 
+               id="title" 
+               name="title" 
+               class="form-control" 
+               maxlength="200" 
+               required
+               placeholder="Digite o título do post">
+        <div class="form-text">Máximo 200 caracteres</div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="summary" class="form-label">Resumo *</label>
+        <textarea id="summary" 
+                  name="summary" 
+                  class="form-control" 
+                  maxlength="500" 
+                  rows="3"
+                  required
+                  placeholder="Resumo do post (aparecerá na listagem)"></textarea>
+        <div class="form-text">Máximo 500 caracteres</div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="content" class="form-label">Conteúdo *</label>
+        <textarea id="content" 
+                  name="content" 
+                  class="form-control" 
+                  rows="10"
+                  required
+                  placeholder="Conteúdo completo do post (markdown suportado)"></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="category" class="form-label">Categoria *</label>
+                <input type="text" 
+                       id="category" 
+                       name="category" 
+                       class="form-control" 
+                       required
+                       placeholder="ex: Tecnologia, JavaScript, etc">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label for="tags" class="form-label">Tags</label>
+                <input type="text" 
+                       id="tags" 
+                       name="tags" 
+                       class="form-control" 
+                       placeholder="separadas por vírgula">
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="authorId" value="<%= user.id %>">
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Criar Post</button>
+    </div>
+</form>

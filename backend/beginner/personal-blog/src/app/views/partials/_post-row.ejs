@@ -1,0 +1,37 @@
+<tr id="post-row-<%= post.id %>">
+    <td><%= post.id %></td>
+    <td class="article-title" title="<%= post.title %>">
+        <a href="/post/<%= post.id %>" 
+           hx-get="/post/<%= post.id %>"
+           hx-push-url="true"
+           hx-target=".main-content">
+            <%= post.title %>
+        </a>
+    </td>
+    <td><%= post.author ? post.author : 'Não informado' %></td>
+    <td>
+        <span class="article-status <%= post.status === 'published' ? 'status-published' : 'status-draft' %>">
+            <%= post.status === 'published' ? 'Publicado' : 'Rascunho' %>
+        </span>
+    </td>
+    <td>
+        <%= post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'N/A' %>
+    </td>
+    <td class="actions">
+        <button class="btn btn-warning btn-sm"
+                hx-get="/admin/post/edit-form/<%= post.id %>"
+                hx-target="#modal-body"
+                hx-swap="innerHTML"
+                _="on htmx:afterOnLoad call openModal('Editar Post')">
+            ✏️ Editar
+        </button>
+        <button class="btn btn-danger btn-sm"
+                hx-delete="/admin/post/delete/<%= post.id %>"
+                hx-confirm="Tem certeza que deseja excluir este artigo?"
+                hx-target="#post-row-<%= post.id %>"
+                hx-swap="outerHTML"
+                hx-indicator="#dashboard-loader">
+            🗑️ Excluir
+        </button>
+    </td>
+</tr>

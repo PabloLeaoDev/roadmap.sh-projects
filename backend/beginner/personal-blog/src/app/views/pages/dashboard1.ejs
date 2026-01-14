@@ -1,0 +1,263 @@
+    <%- include('../partials/_header', {
+        user: user, 
+        text: {
+            title: '📝 Painel Administrativo'
+        },
+        headerActions: true
+    }) %>
+
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">Gerenciar Artigos</h2>
+                <p>Total de artigos: <%= posts ? posts.length : 0 %></p>
+            </div>
+            <a id="newPostButton" class="btn btn-primary">+ Novo Post</a>
+        </div>
+
+        <div class="articles-container">
+            <div class="articles-header">
+                <h3>Lista de Artigos</h3>
+            </div>
+
+            <% if (posts && posts.length > 0) { %>
+                <table class="articles-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Status</th>
+                            <th>Criado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% posts.forEach((post, index) => { %>
+                            <tr>
+                                <td><%= post.id || (index + 1) %></td>
+                                <td class="article-title" title="<%= post.title %>">
+                                    <%= post.title %>
+                                </td>
+                                <td><%= post.author || 'Não informado' %></td>
+                                <td>
+                                    <span class="article-status <%= post.status === 'published' ? 'status-published' : 'status-draft' %>">
+                                        <%= post.status === 'published' ? 'Publicado' : 'Rascunho' %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'N/A' %>
+                                </td>
+                                <td class="actions">
+                                    <a class="edit-post-button btn btn-warning">
+                                        ✏️ Editar
+                                    </a>
+                                    <form class="delete-post-form" 
+                                            style="display: inline;">
+                                        <button type="submit" class="btn btn-danger">
+                                            🗑️ Excluir
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="no-articles">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <h3>Nenhum artigo encontrado</h3>
+                    <p>Comece criando seu primeiro artigo clicando no botão "Novo Artigo" acima.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div id="newPostWraper"></div>
+    <div id="editPostWraper"></div>
+
+    <script>
+        const editPostbuttons = document.querySelectorAll('.edit-post-button');
+        const deletePostForms = document.querySelectorAll('.delete-post-form');
+
+        function closeForm(form) {
+            form.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach((alert) => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                }, 5000);
+            });
+        });
+
+        newPostButton.addEventListener('click', () => {
+            newPostForm.style.display = 'block';
+        });
+
+        newPostForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(newPostForm);
+            const data = Object.fromEntries(formData.entries());
+
+            data.authorId =  Number('<%= user.id %>');
+
+            const confirmation = confirm('Tem certeza que deseja criar um novo post?');
+
+            if (!confirmation) return;
+
+            const response = await fetch(`/admin/post/new`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            newPostForm.style.display = 'none';
+            window.location.reload();
+        });
+    </script>
+
+    <% posts.forEach((post, index) => { %>
+        <script>
+            editPostbuttons['<%= index %>'].addEventListener('click', (event) => {
+                event.preventDefault();
+                editPostForm.style.display = 'block';
+                editPostForm.dataset.postId = '<%= post.id %>';
+            });
+            
+            async function requestEdit() {
+                const formData = new FormData(editPostForm);
+                const data = Object.fromEntries(formData.entries());
+
+                const confirmation = confirm('Tem certeza que deseja editar esse post?');
+
+                if (!confirmation) return;
+
+                const response = await fetch(`/admin/post/edit/<%= post.id %>`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // const result = await response.json();
+
+                window.location.reload();
+            }
+        </script>
+        <script>
+            deletePostForms['<%= index %>'].addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const confirmation = confirm('Tem certeza que deseja excluir este artigo?');
+
+                if (!confirmation) return;
+
+                const response = await fetch(`/admin/post/delete/<%= post.id %>`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // const result = await response.json();
+
+                window.location.reload();
+            });
+        </script>
+    <% }); %>
+
+    <!-- EDIT SCRIPT -->
+    <script>
+        // Contador de caracteres para o título
+        const titleInput = document.getElementById('title');
+        const titleCounter = document.createElement('div');
+        titleCounter.className = 'form-text';
+        titleInput.parentNode.appendChild(titleCounter);
+
+        function updateTitleCounter() {
+            const remaining = 200 - titleInput.value.length;
+            titleCounter.textContent = `${titleInput.value.length}/200 caracteres`;
+            titleCounter.style.color = remaining < 20 ? '#dc3545' : '#666';
+        }
+
+        titleInput.addEventListener('input', updateTitleCounter);
+        updateTitleCounter();
+
+        // Contador de caracteres para o resumo
+        const summaryInput = document.getElementById('summary');
+        const summaryCounter = document.createElement('div');
+        summaryCounter.className = 'form-text';
+        summaryInput.parentNode.appendChild(summaryCounter);
+
+        function updateSummaryCounter() {
+            const remaining = 500 - summaryInput.value.length;
+            summaryCounter.textContent = `${summaryInput.value.length}/500 caracteres`;
+            summaryCounter.style.color = remaining < 50 ? '#dc3545' : '#666';
+        }
+
+        summaryInput.addEventListener('input', updateSummaryCounter);
+        updateSummaryCounter();
+
+        // Auto-save para rascunhos (opcional)
+        let autoSaveTimeout;
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input, textarea, select');
+
+        function autoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                // Aqui você pode implementar uma função de auto-save
+                console.log('Auto-save triggered');
+            }, 30000); // Auto-save a cada 30 segundos
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('input', autoSave);
+        });
+
+        // Confirmação antes de sair da página se houver alterações não salvas
+        let formChanged = false;
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                formChanged = true;
+            });
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        form.addEventListener('submit', () => {
+            formChanged = false;
+        });
+
+        // Auto-hide alerts
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                }, 5000);
+            });
+        });
+    </script>
