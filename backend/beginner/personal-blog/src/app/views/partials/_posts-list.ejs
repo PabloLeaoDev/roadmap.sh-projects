@@ -74,7 +74,7 @@
 <% if (posts && posts.length > 0) { %>
     <div class="articles-grid">
         <% posts.forEach((post) => { %>
-            <%- include('_article-card', { post: post }) %>
+            <%- include('_post-card', { post: post }) %>
         <% }); %>
     </div>
 
