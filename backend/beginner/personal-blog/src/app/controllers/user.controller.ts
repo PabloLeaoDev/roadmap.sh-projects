@@ -1,74 +1,10 @@
 import * as userService from '../services/user.service.ts';
 import * as guessService from '../services/guess.service.ts';
 import { Request, Response } from 'express';
-import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
-import { Permission } from '../utils/enums/perm.enum.ts';
-import { userInputValidation, generateToken, generateCookie, resPattern, mainViewData } from '../utils/main.util.ts';
+import { resPattern, mainViewData } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
-
-export async function signup(req: Request, res: Response) {
-  try {
-    let { name, email, password, confirmPassword, permId } = req.body as IUserCreate & { confirmPassword: string };
-
-    userInputValidation({ name, email, password, confirmPassword }, true);
-  
-    if (!permId) permId = Permission.ADMIN;
-
-    const createdUser = await userService.signup({ name, email, password, permId }),
-          token = generateToken(createdUser);
-
-    generateCookie(res, token);
-
-    return res.status(201).json({ 
-      success: true, 
-      redirectUrl: '/dashboard' 
-    });
-  } catch (error) {
-    if (req.headers['hx-request'] === 'true') {
-        return res.render('partials/_alert', {
-          error: (error as Error).message,
-          success: null
-        });
-    }
-
-    return res.render('layouts/main', {
-      ...mainViewData,
-      page: 'sign',
-      styles: ['sign'],
-      data: {
-        isSignup: true, 
-        error: error,
-        success: null 
-      }
-    });
-  }
-}
-
-export async function signin(req: Request, res: Response) {
-  try {
-    let { name, email, password, permId } = req.body as IUserBase;
-    
-    userInputValidation({ name, email, password });
-
-    if (!permId) permId = Permission.ADMIN;
-
-    const authorizedUser = await userService.signin({ name, email, password, permId }),
-          token = generateToken(authorizedUser);
-
-    generateCookie(res, token);
-
-    return res.json({ 
-      success: true, 
-      redirectUrl: '/dashboard' 
-    });
-  } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(400).json(response);
-  }
-}
 
 export async function logout(req: Request, res: Response) {
   try {
@@ -102,9 +38,9 @@ export async function createPost(req: Request, res: Response) {
       payload: { post } 
     });
 
-    res.render('partials/_post-row', { post: { ...post, author: users[0].name } });
+    res.render('fragments/_post-row', { post: { ...post, author: users[0].name } });
   } catch (error) {
-    res.status(400).render('partials/_alert', {
+    res.status(400).render('fragments/_alert', {
       error: (error as Error).message,
       success: null
     });
@@ -167,32 +103,10 @@ export async function deletePost(req: Request, res: Response) {
   }
 }
 
-export function renderLogin(req: Request, res: Response) {
-  return res.render('layouts/main', {
-    ...mainViewData,
-    page: 'sign',
-    styles: ['sign'],
-    data: {
-      isSignup: false
-    }
-  });
-}
-
-export function renderSignup(req: Request, res: Response) {
-  return res.render('layouts/main', {
-    ...mainViewData,
-    page: 'sign',
-    styles: ['sign'],
-    data: {
-      isSignup: true
-    }
-  });
-}
-
 export function renderDashboard(req: Request, res: Response) {
   const user = req.user;
 
-  return res.render('layouts/main', {
+  return res.render('layouts/index', {
     ...mainViewData,
     page: 'dashboard',
     styles: ['dashboard'],
@@ -205,7 +119,7 @@ export async function renderDashboardPartial(req: Request, res: Response) {
 
     return res.render('partials/_dashboard-partial', { posts, user: req.user });
   } catch (error) {
-    return res.status(400).render('partials/_alert', {
+    return res.status(400).render('fragments/_alert', {
       error: (error as Error).message,
       success: null
     });
@@ -222,7 +136,7 @@ export async function renderEditPostForm(req: Request, res: Response) {
     
     return res.render('partials/_edit-post-form', { post: (posts as IPost[])[0], user: req.user });
   } catch (error) {
-    return res.status(400).render('partials/_alert', {
+    return res.status(400).render('fragments/_alert', {
       error: (error as Error).message,
       success: null
     });

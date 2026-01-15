@@ -1,0 +1,272 @@
+<div class="login-container">
+    <div class="login-header">
+        <h1>Painel Administrativo</h1>
+        <p><%= isSignup ? 'Crie sua conta' : 'Faça login para acessar o sistema' %></p>
+    </div>
+
+    <!-- Mensagens de erro/sucesso com auto-removal -->
+    <div id="auth-messages">
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"
+                 _="on load wait 5s then transition opacity to 0 over 0.5s then remove me">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success"
+                 _="on load wait 5s then transition opacity to 0 over 0.5s then remove me">
+                <%= success %>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Formulário dinâmico -->
+    <form id="authForm"
+          hx-post="/admin/<%= isSignup ? 'signup' : 'signin' %>"
+          hx-target="#auth-messages"
+          hx-swap="innerHTML"
+          hx-indicator="#auth-loader"
+          _="on htmx:beforeSend
+                set :submitButton.disabled to true
+                set :submitButton.innerHTML to '<%= isSignup ? 'Cadastrando...' : 'Entrando...' %>'
+             on htmx:afterRequest
+                if event.detail.successful
+                    if event.detail.xhr.getResponseHeader('HX-Redirect')
+                        -- Redirecionamento tratado pelo header
+                    else if event.detail.xhr.responseURL.includes('/dashboard')
+                        htmx.ajax('GET', '/dashboard', { target: 'body', swap: 'innerHTML' })
+                    end
+                else
+                    set :submitButton.disabled to false
+                    set :submitButton.innerHTML to '<%= isSignup ? 'Cadastrar' : 'Entrar' %>'
+                end">
+        
+        <div class="form-group">
+            <label for="name">Usuário:</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="name" 
+                   name="name" 
+                   value="<%= typeof name !== 'undefined' ? name : '' %>"
+                   <%= isSignup ? 'required' : '' %>
+                   _="on input
+                      if my.value.length > 0
+                          remove @required from #email
+                      else
+                          set @required on #email">
+        </div>
+
+        <% if (isSignup) { %>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" 
+                       class="form-control" 
+                       id="email" 
+                       name="email" 
+                       value="<%= typeof email !== 'undefined' ? email : '' %>"
+                       required
+                       _="on load or change
+                          if my.checkValidity()
+                              remove .is-invalid from me
+                              add .is-valid to me
+                          else
+                              remove .is-valid from me
+                              add .is-invalid to me">
+            </div>
+        <% } else { %>
+            <input type="hidden" name="email" value="">
+        <% } %>
+
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <div class="password-container">
+                <input type="password" 
+                       class="form-control" 
+                       id="password" 
+                       name="password" 
+                       required
+                       minlength="6"
+                       _="on input
+                          if my.value.length >= 6
+                              remove .is-invalid from me
+                              add .is-valid to me
+                          else
+                              remove .is-valid from me
+                              add .is-invalid to me">
+                <button type="button" 
+                        class="password-toggle"
+                        _="on click
+                           toggle type of #password between 'password' and 'text'
+                           toggle @class of #password-eye between 'fa-eye' and 'fa-eye-slash'">
+                    <i id="password-eye" class="fas fa-eye-slash"></i>
+                </button>
+            </div>
+            <small class="form-text text-muted">Mínimo 6 caracteres</small>
+        </div>
+
+        <% if (isSignup) { %>
+            <div class="form-group">
+                <label for="confirm-password">Confirme a Senha:</label>
+                <div class="password-container">
+                    <input type="password" 
+                           class="form-control" 
+                           id="confirm-password" 
+                           name="confirmPassword" 
+                           required
+                           _="on input
+                              if my.value === #password.value
+                                  remove .is-invalid from me
+                                  add .is-valid to me
+                                  set @disabled of :submitButton to false
+                              else
+                                  remove .is-valid from me
+                                  add .is-invalid to me
+                                  set @disabled of :submitButton to true">
+                    <button type="button" 
+                            class="password-toggle"
+                            _="on click
+                               toggle type of #confirm-password between 'password' and 'text'
+                               toggle @class of #confirm-password-eye between 'fa-eye' and 'fa-eye-slash'">
+                        <i id="confirm-password-eye" class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+                <small class="form-text text-muted" 
+                       _="on input from #confirm-password
+                          if #confirm-password.value !== #password.value
+                              put 'As senhas não coincidem' into me
+                              add .text-danger to me
+                              remove .text-muted from me
+                          else
+                              put 'Senhas conferem' into me
+                              remove .text-danger from me
+                              add .text-success to me">
+                    Digite a mesma senha
+                </small>
+            </div>
+        <% } %>
+
+        <!-- Loader -->
+        <div id="auth-loader" class="htmx-indicator" style="text-align: center; margin: 1rem 0;">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Processando...</span>
+            </div>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="form-actions">
+            <% if (isSignup) { %>
+                <button type="submit" 
+                        class="btn btn-primary"
+                        id="submitButton"
+                        _="on load
+                           set @disabled to true">
+                    Cadastrar
+                </button>
+                <a href="/login" 
+                   class="btn btn-secondary"
+                   hx-get="/login/partial"
+                   hx-target=".login-container"
+                   hx-swap="outerHTML"
+                   hx-push-url="true">
+                    Voltar para Login
+                </a>
+            <% } else { %>
+                <button type="submit" class="btn btn-primary" id="submitButton">
+                    Entrar
+                </button>
+                <a href="/" 
+                   class="btn btn-secondary"
+                   hx-get="/"
+                   hx-target="body"
+                   hx-swap="innerHTML">
+                    Voltar para Home
+                </a>
+            <% } %>
+        </div>
+
+        <!-- Link alternativo -->
+        <div class="auth-link" style="margin-top: 1rem; text-align: center;">
+            <% if (isSignup) { %>
+                <span>Já possui uma conta? </span>
+                <a href="/login"
+                   hx-get="/login/partial"
+                   hx-target=".login-container"
+                   hx-swap="outerHTML"
+                   hx-push-url="true">
+                    Faça login aqui
+                </a>
+            <% } else { %>
+                <span>Ainda não possui uma conta? </span>
+                <a href="/signup"
+                   hx-get="/signup/partial"
+                   hx-target=".login-container"
+                   hx-swap="outerHTML"
+                   hx-push-url="true">
+                    Cadastre-se aqui
+                </a>
+            <% } %>
+        </div>
+    </form>
+</div>
+
+<!-- Estilos específicos -->
+<style>
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: #333;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+.auth-link a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+.is-valid {
+    border-color: #28a745 !important;
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+</style>
+
+<!-- Ícones do Font Awesome (se não tiver incluído) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
