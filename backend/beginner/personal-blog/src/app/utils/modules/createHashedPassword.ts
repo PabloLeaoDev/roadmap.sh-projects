@@ -6,5 +6,3 @@ export async function createHashedPassword(password: string, salt: string | numb
 
   return hashedPassword;
 }
-
-// (async () => console.log(await createHashedPassword('12345678', 9)))();

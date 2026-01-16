@@ -2,7 +2,7 @@ import * as userService from '../services/user.service.ts';
 import * as guessService from '../services/guess.service.ts';
 import { Request, Response } from 'express';
 import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
-import { resPattern, mainViewData } from '../utils/main.util.ts';
+import { resPattern } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
 
@@ -106,10 +106,9 @@ export async function deletePost(req: Request, res: Response) {
 export function renderDashboard(req: Request, res: Response) {
   const user = req.user;
 
-  return res.render('layouts/index', {
-    ...mainViewData,
+  return res.renderLayout({
     page: 'dashboard',
-    styles: ['dashboard'],
+    styles: ['index', 'dashboard'],
     data: { success: true, user }
   });
 }

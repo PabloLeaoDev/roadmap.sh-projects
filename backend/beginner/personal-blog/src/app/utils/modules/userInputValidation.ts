@@ -3,7 +3,6 @@ import isValidUser from './isValidUser.ts';
 import isValidPassword from './isValidPassword.ts';
 import { IUserBase } from '../interfaces/user.interface.ts';
 import { MakeOptional } from '../interfaces/utility.interface.ts';
-import { Request, Response } from 'express';
 
 export default function userInputValidation(
   userData: 

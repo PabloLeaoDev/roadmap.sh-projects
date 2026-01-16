@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title ? title : 'MeuBlog' %></title>
-    <% if (styles) { %>
+    <title><%= typeof title !== 'undefined' ? title : 'MeuBlog' %></title>
+    <% if (locals.styles) { %>
         <% styles.forEach((style) => { %>
             <link rel="stylesheet" href="/styles/<%= style %>.css">
         <% }); %>
@@ -14,7 +14,7 @@
 <body>
     <%- include(`../pages/${page}`, data) %>
     
-    <% if (scripts) { %>
+    <% if (locals.scripts) { %>
         <% scripts.forEach((script) => { %>
             <script src="/scripts/<%= script %>.js"></script>
         <% }); %>

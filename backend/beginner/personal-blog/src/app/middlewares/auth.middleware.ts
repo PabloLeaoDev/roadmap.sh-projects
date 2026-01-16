@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export function verifyAuthMid(req: Request, res: Response, next: NextFunction): 
+export default function auth(req: Request, res: Response, next: NextFunction): 
   Response<any, Record<string, any>> | void 
 {
   try {  

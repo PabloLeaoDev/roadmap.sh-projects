@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { IPost } from '../utils/interfaces/post.interface.ts';
 import { IUserBase, IUserCreate } from '../utils/interfaces/user.interface.ts';
 import { Permission } from '../utils/enums/perm.enum.ts';
-import { userInputValidation, generateToken, generateCookie, resPattern, mainViewData } from '../utils/main.util.ts';
+import { userInputValidation, generateToken, generateCookie, resPattern } from '../utils/main.util.ts';
 
 export async function signup(req: Request, res: Response) {
   try {
@@ -19,24 +19,22 @@ export async function signup(req: Request, res: Response) {
 
     generateCookie(res, token);
 
-    if (req.headers['hx-request']) {
+    if (!res.locals.layout) {
       res.set('HX-Redirect', '/login?success=Conta criada com sucesso!');
       return res.send();
     }
 
     res.redirect('/login?success=Conta criada com sucesso!');
   } catch (error) {
-    if (req.headers['hx-request'] === 'true') {
+    if (!res.locals.layout) {
         return res.render('fragments/_alert', {
-          error: (error as Error).message,
-          success: null
+          error: (error as Error).message
         });
     }
 
-    return res.render('layouts/index', {
-      ...mainViewData,
+    return res.renderLayout({
       page: 'sign',
-      styles: ['sign'],
+      styles: ['index' ,'sign'],
       data: {
         isSignup: true, 
         error: error,
@@ -59,33 +57,32 @@ export async function signin(req: Request, res: Response) {
 
     generateCookie(res, token);
 
-    if (req.headers['hx-request']) {
+    if (!res.locals.layout) {
       res.set('HX-Redirect', '/dashboard');
       return res.send();
     }
     
     res.redirect('/dashboard');
   } catch (error) {
-    if (req.headers['hx-request']) {
-      return res.status(400).render('partials/_alert', { 
-          message: (error as Error).message 
+    if (!res.locals.layout) {
+      return res.status(400).render('fragments/_alert', { 
+          error: (error as Error).message 
       });
     }
     
     res.redirect(`/signup?error=${encodeURIComponent((error as Error).message)}`);
   }
 }
+
 export async function renderHome(req: Request, res: Response) {
   try {
     if (req.url === '/') 
       return res.redirect('/home');
 
-    const isHtmx = req.headers['hx-request'] === 'true';
-    
     const { posts } = await guessService.getPosts() as { posts: IPost[] };
     const { search, category } = req.query;
 
-    if (isHtmx) {
+    if (!res.locals.layout) {
       return res.render('partials/_posts-list', { 
         posts, 
         search, 
@@ -93,10 +90,9 @@ export async function renderHome(req: Request, res: Response) {
       });
     }
 
-    return res.render('layouts/index', {
-      ...mainViewData,
+    return res.renderLayout({
       page: 'home',
-      styles: ['home'],
+      styles: ['index', 'home'],
       data: {
         posts, 
         user: 'teste',
@@ -134,10 +130,9 @@ export async function renderPost(req: Request, res: Response) {
 
     if (!posts) throw new Error();
 
-    return res.render('layouts/index', {
-      ...mainViewData,
-      age: 'post',
-      styles: ['post'],
+    return res.renderLayout({
+      page: 'post',
+      styles: ['index' ,'post'],
       data: {
         article: posts[0] || posts,
         user: 'teste' 
@@ -150,30 +145,43 @@ export async function renderPost(req: Request, res: Response) {
 }
 
 export function renderLogin(req: Request, res: Response) {
-  return res.render('layouts/index', {
-    ...mainViewData,
+  return res.renderLayout({
     page: 'sign',
-    styles: ['sign'],
+    styles: ['index' ,'sign'],
     data: {
-      isSignup: false
+      isSignup: false,
+      name: req.query.name || '',
+      error: req.query.error || null,
+      success: req.query.success || null
     }
   });
 }
 
 export function renderLoginPartial(req: Request, res: Response) {
-    res.render('partials/sign-partial', { 
+  if (!res.locals.layout) {
+      return res.render('partials/_sign-partial', {
         isSignup: false,
+        name: req.query.name || '',
         error: req.query.error || null,
-        success: req.query.success || null,
-        name: req.query.name || ''
-    });
+        success: req.query.success || null
+      });
+  }
+
+  return res.renderLayout({
+    page: 'sign',
+    data: {
+      isSignup: false,
+      name: req.query.name || '',
+      error: req.query.error || null,
+      success: req.query.success || null
+    }
+  });
 };
 
 export function renderSignup(req: Request, res: Response) {
-  return res.render('layouts/index', {
-    ...mainViewData,
+  return res.renderLayout({
     page: 'sign',
-    styles: ['sign'],
+    styles: ['index' ,'sign'],
     data: {
       isSignup: true
     }
@@ -181,7 +189,7 @@ export function renderSignup(req: Request, res: Response) {
 }
 
 export function renderSignupPartial(req: Request, res: Response) {
-    res.render('partials/sign-partial', { 
+    res.render('partials/_sign-partial', { 
         isSignup: true,
         error: req.query.error || null,
         success: req.query.success || null,

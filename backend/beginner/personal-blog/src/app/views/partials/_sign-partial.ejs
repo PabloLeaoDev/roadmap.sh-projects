@@ -23,7 +23,7 @@
 
     <!-- Formulário dinâmico -->
     <form id="authForm"
-          hx-post="/admin/<%= isSignup ? 'signup' : 'signin' %>"
+          hx-post="/<%= isSignup ? 'signup' : 'signin' %>"
           hx-target="#auth-messages"
           hx-swap="innerHTML"
           hx-indicator="#auth-loader"
@@ -54,7 +54,7 @@
                       if my.value.length > 0
                           remove @required from #email
                       else
-                          set @required on #email">
+                          set @required to #email">
         </div>
 
         <% if (isSignup) { %>
@@ -175,11 +175,7 @@
                 <button type="submit" class="btn btn-primary" id="submitButton">
                     Entrar
                 </button>
-                <a href="/" 
-                   class="btn btn-secondary"
-                   hx-get="/"
-                   hx-target="body"
-                   hx-swap="innerHTML">
+                <a href="/" class="btn btn-secondary">
                     Voltar para Home
                 </a>
             <% } %>
