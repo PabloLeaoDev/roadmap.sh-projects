@@ -14,22 +14,26 @@
 
 <div class="articles-container">
     <div class="articles-header">
-        <h3>Lista de Artigos</h3>
+        <h3>Lista de Posts</h3>
     </div>
 
-    <% if (posts && posts.length > 0) { %>
-        <table class="articles-table">
+    <table class="articles-table">
+        <% if (posts && posts.length > 0) { %>
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Autor</th>
-                    <th>Status</th>
-                    <th>Criado em</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="posts-body">
+        <% } else { %>
+            <thead style="display: none;">
+        <% } %>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Status</th>
+                <th>Criado em</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="posts-body">
+            <% if (posts && posts.length > 0) { %>
                 <% posts.reverse().forEach((post) => { %>
                     <tr id="post-row-<%= post.id %>">
                         <td><%= post.id %></td>
@@ -58,9 +62,9 @@
                                     _="on htmx:afterOnLoad call openModal('Editar Post')">
                                 ✏️ Editar
                             </button>
-                            <button class="btn btn-danger btn-sm"
+                            <button class="btn btn-danger btn-sm" id="deleteBtn"
                                     hx-delete="/admin/post/delete/<%= post.id %>"
-                                    hx-confirm="Tem certeza que deseja excluir este artigo?"
+                                    hx-confirm="Tem certeza que deseja excluir este post?"
                                     hx-target="#post-row-<%= post.id %>"
                                     hx-swap="outerHTML"
                                     hx-indicator="#dashboard-loader">
@@ -69,13 +73,13 @@
                         </td>
                     </tr>
                 <% }); %>
-            </tbody>
-        </table>
-    <% } else { %>
-        <div class="no-articles">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-            <h3>Nenhum artigo encontrado</h3>
-            <p>Comece criando seu primeiro artigo clicando no botão "Novo Artigo" acima.</p>
-        </div>
-    <% } %>
+            <% } else { %>
+                <div class="no-articles">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <h3>Nenhum post encontrado</h3>
+                    <p>Comece criando seu primeiro post clicando no botão "Novo Post" acima.</p>
+                </div>
+            <% } %>
+        </tbody>
+    </table>
 </div>

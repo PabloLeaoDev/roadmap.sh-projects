@@ -38,15 +38,28 @@
 function openModal(title = '') {
     const modal = document.getElementById('modal-container');
     const modalTitle = document.getElementById('modal-title');
+
     modal.style.display = 'block';
+
     if (title) 
         modalTitle.textContent = title;
+
     document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
     const modal = document.getElementById('modal-container');
+    const noPosts = document.querySelector('.no-articles');
+    const headerPosts = document.querySelector('.articles-table thead');
+
     modal.style.display = 'none';
+
+    if (headerPosts.style.display === 'none')
+        headerPosts.style.display = 'block';
+
+    if (noPosts)
+        noPosts.remove();
+
     document.body.style.overflow = 'auto';
 }
 
@@ -85,7 +98,7 @@ function initCharacterCounters() {
         function updateTitleCounter() {
             const remaining = 200 - titleInput.value.length;
             titleCounter.textContent = `${titleInput.value.length}/200 caracteres`;
-            titleCounter.style.color = remaining < 20 ? '#dc3545' : '#666';
+            titleCounter.style.color = remaining < 20 ? '#dc3545' : '#678';
         }
         
         titleInput.addEventListener('input', updateTitleCounter);
@@ -103,7 +116,7 @@ function initCharacterCounters() {
         function updateSummaryCounter() {
             const remaining = 500 - summaryInput.value.length;
             summaryCounter.textContent = `${summaryInput.value.length}/500 caracteres`;
-            summaryCounter.style.color = remaining < 50 ? '#dc3545' : '#666';
+            summaryCounter.style.color = remaining < 50 ? '#dc3545' : '#678';
         }
         
         summaryInput.addEventListener('input', updateSummaryCounter);

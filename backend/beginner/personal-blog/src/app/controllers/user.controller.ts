@@ -2,7 +2,8 @@ import * as userService from '../services/user.service.ts';
 import * as guessService from '../services/guess.service.ts';
 import { Request, Response } from 'express';
 import { IPost, IPostCreate, IPostNoDate } from '../utils/interfaces/post.interface.ts';
-import { resPattern } from '../utils/main.util.ts';
+import { error } from 'node:console';
+// import { resPattern } from '../utils/main.util.ts';
 
 // import { IError } from '../utils/interfaces/user.interface.ts';
 
@@ -11,9 +12,10 @@ export async function logout(req: Request, res: Response) {
     res.clearCookie('token');
     return res.redirect('/');
   } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(400).json(response);
+    return res.status(400).render('fragments/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
   }
 }
 
@@ -32,15 +34,9 @@ export async function createPost(req: Request, res: Response) {
     const { post } = await userService.createPost({ title, authorId: Number(authorId), content, summary, category, tags });
     const { users } = await userService.getUsersById(Number(authorId));
 
-    const response = resPattern({ 
-      success: true, 
-      message: 'Post created successfully', 
-      payload: { post } 
-    });
-
     res.render('fragments/_post-row', { post: { ...post, author: users[0].name } });
   } catch (error) {
-    res.status(400).render('fragments/_alert', {
+    return res.status(400).render('fragments/_alert', {
       error: (error as Error).message,
       success: null
     });
@@ -49,9 +45,9 @@ export async function createPost(req: Request, res: Response) {
 
 export async function editPost(req: Request, res: Response) {
   try {
-    const { id, ...fields } = { id: Number(req.params.id), ...req.body } as IPostNoDate;
+    const fields = req.body as IPostNoDate;
 
-    if (!id || isNaN(id))
+    if (!fields.id || isNaN(fields.id))
       throw new Error('ID post must be submitted');
     
     if (
@@ -63,21 +59,17 @@ export async function editPost(req: Request, res: Response) {
     ) throw new Error('At least one post upgradeable field must be submitted');
 
     const { post } = await userService.updatePostData({
-      id,
       ...fields,
+      id: Number(fields.id),
       authorId: Number(fields.authorId)
     });
-    const response = resPattern({ 
-      success: true, 
-      message: 'Post edited successfully', 
-      payload: { post } 
-    });
 
-    return res.status(200).json(response);
+    return res.render('fragments/_post-row', { post });
   } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(400).json(response);
+    return res.status(400).render('fragments/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
   }
 }
 
@@ -88,18 +80,17 @@ export async function deletePost(req: Request, res: Response) {
     if ((!id) || isNaN(Number(id)))
       throw new Error('ID post must be submitted');
 
-    const { post } = await userService.deletePost(Number(id));
-    const response = resPattern({ 
-      success: true, 
-      message: 'Post deleted successfully', 
-      payload: { post } 
+    await userService.deletePost(Number(id));
+
+    return res.status(200).render('fragments/_alert', {
+      error: null,
+      success: 'The post was successfully deleted'
     });
-
-    return res.json(response);
   } catch (error) {
-    const response = resPattern({ error: error as Error });
-
-    return res.status(400).json(response);
+    return res.status(400).render('fragments/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
   }
 }
 
@@ -125,8 +116,17 @@ export async function renderDashboardPartial(req: Request, res: Response) {
   }
 };
 
-export function renderNewPostForm(req: Request, res: Response) {
-    res.render('partials/_new-post-form', { user: req.user });
+export async function renderNewPostForm(req: Request, res: Response) {
+  try {
+    const { posts } = await userService.getPosts();
+
+    return res.render('partials/_new-post-form', { posts, user: req.user });
+  } catch (error) {
+    return res.status(400).render('fragments/_alert', {
+      error: (error as Error).message,
+      success: null
+    });
+  }
 };
 
 export async function renderEditPostForm(req: Request, res: Response) {

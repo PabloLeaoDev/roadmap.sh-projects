@@ -30,12 +30,16 @@
           _="on htmx:beforeSend
                 set :submitButton.disabled to true
                 set :submitButton.innerHTML to '<%= isSignup ? 'Cadastrando...' : 'Entrando...' %>'
-             on htmx:afterRequest
+            on htmx:afterRequest
                 if event.detail.successful
                     if event.detail.xhr.getResponseHeader('HX-Redirect')
-                        -- Redirecionamento tratado pelo header
-                    else if event.detail.xhr.responseURL.includes('/dashboard')
-                        htmx.ajax('GET', '/dashboard', { target: 'body', swap: 'innerHTML' })
+                        log 'Redirecionamento detectado pelo header'
+                    else 
+                        if event.detail.xhr.responseURL.includes('/dashboard')
+                            js 
+                                htmx.ajax('GET', '/dashboard', { target: 'body', swap: 'innerHTML' }) 
+                            end
+                        end
                     end
                 else
                     set :submitButton.disabled to false
@@ -51,10 +55,13 @@
                    value="<%= typeof name !== 'undefined' ? name : '' %>"
                    <%= isSignup ? 'required' : '' %>
                    _="on input
-                      if my.value.length > 0
-                          remove @required from #email
-                      else
-                          set @required to #email">
+                        if exists #email
+                            if my.value.length > 0
+                                remove @required from #email
+                            else
+                                set @required to #email
+                            end
+                        end">
         </div>
 
         <% if (isSignup) { %>
@@ -97,8 +104,13 @@
                 <button type="button" 
                         class="password-toggle"
                         _="on click
-                           toggle type of #password between 'password' and 'text'
-                           toggle @class of #password-eye between 'fa-eye' and 'fa-eye-slash'">
+                           toggle .fa-eye on #password-eye
+                           toggle .fa-eye-slash on #password-eye
+                           if #password.type is 'password' 
+                               set #password.type to 'text' 
+                           else
+                                set #password.type to 'password'
+                           end">
                     <i id="password-eye" class="fas fa-eye-slash"></i>
                 </button>
             </div>

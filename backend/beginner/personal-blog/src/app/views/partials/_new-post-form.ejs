@@ -1,8 +1,8 @@
 <form hx-post="/admin/post/new"
-      hx-target=".articles-table"
+      hx-target="#posts-body"
       hx-swap="afterbegin"
       hx-indicator="#dashboard-loader"
-      _="on htmx:afterRequest 
+      _="on htmx:afterRequest
             if event.detail.successful
                 call closeModal()
             end">

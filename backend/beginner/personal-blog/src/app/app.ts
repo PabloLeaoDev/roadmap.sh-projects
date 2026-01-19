@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url),
       __dirname = dirname(__filename);
 const app = express();
 
-app.locals.styles = ['index', 'home'];
+app.locals.styles = ['index', 'home', 'post', 'sign', 'dashboard'];
 app.locals.scripts = ['htmx.min', 'hyperscript.min'];
 
 app.set('view engine', 'ejs');

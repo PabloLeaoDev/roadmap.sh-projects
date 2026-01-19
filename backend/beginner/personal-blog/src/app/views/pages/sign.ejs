@@ -1,14 +1,16 @@
-<div class="login-container"
-     hx-get="/<%= isSignup ? 'signup' : 'login' %>/partial"
-     hx-trigger="load, htmx:afterSwap from:body"
-     hx-target="this"
-     hx-swap="outerHTML"
-     hx-push-url="true">
+<main id="sign-main">
+    <div class="login-container"
+         hx-get="/<%= isSignup ? 'signup' : 'login' %>/partial"
+         hx-trigger="load, htmx:afterSwap from:body"
+         hx-target="this"
+         hx-swap="outerHTML"
+         hx-push-url="true">
     
-    <!-- Conteúdo será carregado dinamicamente -->
-    <div style="text-align: center; padding: 2rem;">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Carregando...</span>
+        <!-- Conteúdo será carregado dinamicamente -->
+        <div style="text-align: center; padding: 2rem;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
         </div>
     </div>
-</div>
+</main>
