@@ -13,6 +13,11 @@ class Task extends Model
         'status',
     ];
 
+    public function index() {
+        $tasks = Task::orderBy('created_at','desc');
+        return $tasks;
+    }
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
